@@ -1,0 +1,47 @@
+<launch>
+  <node pkg="nodelet" type="nodelet" name="manager_nodelet"  args="manager" output="screen">
+  <param name="num_worker_threads" type="int" value="4"/>
+  </node>
+    
+    <!--Camera settings-->
+    <arg name="serial" default="25000836"/>
+    <arg name="calib_file" default="calib_$(arg serial)"/>
+    <arg name="calib_url" default="package://bluefox2/calib/$(arg calib_file).yml"/>
+    <arg name="fps" default="80"/>
+    <arg name="color" default="false"/>
+    <arg name="expose" default="0"/>
+    <arg name="expose_us" default="5000"/>
+    <arg name="binning" default="false"/>
+    <arg name="gain_db" default="0.0"/>
+    <arg name="trigger" default="0"/>
+    <arg name="hdr" default="true"/>
+    
+    
+    <!--Run as standalone nodelet-->
+  <!--  <node pkg="nodelet" type="nodelet"
+         name="mv_$(arg serial)"
+         args="load bluefox2/SingleNodelet manager_nodelet">
+        <param name="serial" type="string" value="$(arg serial)"/>
+        <param name="fps" type="int" value="$(arg fps)"/>
+        <param name="color" type="bool" value="$(arg color)"/>
+        <param name="expose" type="int" value="$(arg expose)"/>
+        <param name="expose_us" type="int" value="$(arg expose_us)"/>
+        <param name="binning" type="bool" value="$(arg binning)"/>
+        <param name="gain_db" type="double" value="$(arg gain_db)"/>
+        <param name="trigger" type="int" value="$(arg trigger)"/>
+        <param name="hdr" type="bool" value="$(arg hdr)"/>
+        <param name="calib_url" type="string" value="$(arg calib_url)"/>
+        <remap from="~image_raw" to="camera/image_raw"/>
+    </node>-->
+
+        
+  <node pkg="nodelet"
+        type="nodelet"
+        name="cylinder_detection"
+        args="load cylinder_detection/cylinder_detection manager_nodelet"
+        output="screen">
+    <rosparam file="$(find cylinder_detection)/src/parameter.yaml" />
+    <remap from="~image" to="/nanoplus/image_zeromq_to_ros/image_raw"/>
+
+</node>
+</launch>

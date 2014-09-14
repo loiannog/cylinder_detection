@@ -1,0 +1,12 @@
+lowThreshold: 30
+thresh_threshold: 220
+maxThreshold: 255
+maxCannyThreshold: 150
+aperture_size: 3
+rhoRes: 10
+thetaRes: 0.02
+HoughThresh: 100
+minLineLength: 30
+maxLineGap: 10
+kernelSize: 5
+sigmaX: 0

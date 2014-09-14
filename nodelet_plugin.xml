@@ -1,0 +1,9 @@
+<library path="lib/libcylinder_detection">
+  <class name="cylinder_detection/cylinder_detection"
+         type="cylinder_detection"
+         base_class_type="nodelet::Nodelet">
+    <description>
+      This is an estimator of the position of a cylinder.
+    </description>
+  </class>
+</library>
