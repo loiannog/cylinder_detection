@@ -34,7 +34,12 @@
         <remap from="~image_raw" to="camera/image_raw"/>
     </node>-->
 
-        
+  <node pkg="nodelet" type="nodelet" name="rectify_mono"
+        args="load image_proc/rectify manager_nodelet">
+    <remap from="image_mono" to="camera/image_raw" />
+    <remap from="image_rect" to="image_rect_mono" />
+  </node>
+  
   <node pkg="nodelet"
         type="nodelet"
         name="cylinder_detection"
