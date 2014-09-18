@@ -9,6 +9,7 @@
 #include <ros/ros.h>
 #include <nodelet/nodelet.h>
 #include <boost/array.hpp>
+#define automatic_detection
 // Set dot characteristics for the auto detection
 using namespace std;
 using namespace cv;
@@ -50,12 +51,42 @@ void cylinder_detection::imgproc_visp(const Mat &src)
    me.setThreshold(15000);//the pixel that will be selected by the moving edges algorithm will be the one that has a convolution higher than 15000
   //Initialize the tracking.
    	  std::list<vpDot2> list_d;//list of elements in constrast respect ot the background
-	  vpDot2 dot_search;
 
-	 //initialization
-	if(!points_init)
-	  {
-	    dot_search.initTracking(I);
+	  
+//initialization
+if(!points_init)
+	  {	  
+#ifdef automatic_detection
+	   /*dot_search.setGrayLevelMin(GrayLevelMin);
+	  dot_search.setGrayLevelMax(GrayLevelMax);
+	  dot_search.setGrayLevelPrecision(opt_grayLevelPrecision);
+	  dot_search.setSizePrecision(opt_sizePrecision);
+	  dot_search.setEllipsoidShapePrecision(opt_ellipsoidShapePrecision);*/
+	  try
+	   {
+		  while(list_d.size() == 0){
+		  dot_search.searchDotsInArea(I, width_min,  height_min,  width_max, height_max, list_d) ;
+		  cout<<"searching the first dot"<<endl;
+		  dot_search = list_d.back();
+		  init_point_blob.set_i(dot_search.getBBox().getCenter().get_i());
+		  init_point_blob.set_j(dot_search.getBBox().getCenter().get_j());
+		  cout<<"blob init:"<<dot_search.getBBox().getCenter().get_i()<<" "<<dot_search.getBBox().getCenter().get_j()<<endl;
+		  	}
+	   }
+	   
+	  catch (int e)
+	   {
+	     cout << "An exception occurred. Exception Nr. " << e << endl;
+	   }  
+	 
+#else
+         dot_search.initTracking(I);
+#endif
+	  
+	  
+	  
+
+	    
 	    vector<vpImagePoint> init_points;
 	    init_points.resize(4);
 	    vpRect box = dot_search.getBBox();
@@ -66,6 +97,7 @@ void cylinder_detection::imgproc_visp(const Mat &src)
 	    
 	    cout<<"valuesr:"<<box.getBottomRight().get_i()<<" "<<box.getBottomRight().get_j()<<endl;
 	    cout<<"valuesl:"<<box.getTopLeft().get_i()<<" "<<box.getTopLeft().get_j()<<endl;
+	    
        int k = 0;
 	for (int i =0; i < 2; i++)
 	{
@@ -78,8 +110,26 @@ void cylinder_detection::imgproc_visp(const Mat &src)
 	  k = k+2;
 	  cout<<i<<endl;
 	}
+	      	 //dot_search.track(I);//track the dot
+#ifdef automatic_detection
+           dot_search.initTracking(I,init_point_blob);
+#endif
+
+	    dot_search.track(I);//track the dot
       }
+
 	    else { //Track the line.
+
+	     try
+	       {
+		// track the blob
+		dot_search.track(I);
+		dot_search.display(I, vpColor::red) ;
+		}
+		  catch (const std::exception &e)
+		{
+	       		  cout<<"tracking failed"<<endl;
+		  }
 	      for (int i =0; i < nbLines; i++)
 	      {
 	     try
