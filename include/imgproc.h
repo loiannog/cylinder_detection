@@ -70,6 +70,8 @@ class cylinder_detection : public nodelet::Nodelet
 
 	void onInit(void);
 	int nbLines;
+        vpDot2 dot_search;
+        vpImagePoint init_point_blob;
 	std::vector<vpMeLine> line_buffer;
 	void imgproc_visp(const cv::Mat &img);
         void imgproc_opencv(const cv::Mat &img);
