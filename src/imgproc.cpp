@@ -9,7 +9,7 @@
 #include <ros/ros.h>
 #include <nodelet/nodelet.h>
 #include <boost/array.hpp>
-#define automatic_detection
+//#define automatic_detection
 // Set dot characteristics for the auto detection
 using namespace std;
 using namespace cv;
@@ -28,7 +28,7 @@ float distanceFormula(Vec4i l)
 
 void cylinder_detection::imgproc_visp(const Mat &src)
 {
-       	double begin = ros::Time::now().toSec();
+  double begin = ros::Time::now().toSec();
   Mat blurred, thresholded, dst, cdst; //Image matrices
   GaussianBlur(src, blurred, Size(kernelSize,kernelSize), sigmaX);//clean the image
   threshold(blurred, thresholded, thresh_threshold, maxThreshold, THRESH_TOZERO);//threshold the image
@@ -36,6 +36,8 @@ void cylinder_detection::imgproc_visp(const Mat &src)
 
    vpImage<unsigned char> I;
    vpImageConvert::convert(thresholded, I);
+                 double intermidiate1 = ros::Time::now().toSec();
+
    d.init(I, 0, 0, "") ;
    
    vpDisplay::display(I);
@@ -45,13 +47,14 @@ void cylinder_detection::imgproc_visp(const Mat &src)
    vpMeLine line[nbLines];
 
   //Set the tracking parameters.
-   me.setRange(30);//set the search range on both sides of the reference pixel
+   me.setRange(40);//set the search range on both sides of the reference pixel
    me.setSampleStep(5);//set the minimum distance in pixel between two discretized points.
    //each pixel along the normal we will compute the oriented convolution
    me.setThreshold(15000);//the pixel that will be selected by the moving edges algorithm will be the one that has a convolution higher than 15000
   //Initialize the tracking.
    	  std::list<vpDot2> list_d;//list of elements in constrast respect ot the background
 
+              double intermidiate2;
 	  
 //initialization
 if(!points_init)
@@ -110,7 +113,7 @@ if(!points_init)
 	  k = k+2;
 	  cout<<i<<endl;
 	}
-	      	 //dot_search.track(I);//track the dot
+	      	 dot_search.track(I);//track the dot
 #ifdef automatic_detection
            dot_search.initTracking(I,init_point_blob);
 #endif
@@ -119,6 +122,7 @@ if(!points_init)
       }
 
 	    else { //Track the line.
+	          intermidiate2 = ros::Time::now().toSec();
 
 	     try
 	       {
@@ -143,8 +147,18 @@ if(!points_init)
 		  }
 	      }
 	      }
+	      
+	      detected_features.stamp = ros::Time::now();
+	      detected_features.rho1 = line_buffer[0].getRho();
+	      detected_features.theta1 = line_buffer[0].getTheta();
+	      detected_features.rho2 = line_buffer[1].getRho();
+	      detected_features.theta2 = line_buffer[1].getTheta();
+	      detected_features.b.x = dot_search.getBBox().getTopLeft().get_i()/sqrt(pow(dot_search.getBBox().getTopLeft().get_i(),2) + pow(dot_search.getBBox().getTopLeft().get_j(),2));
+	      detected_features.b.y = dot_search.getBBox().getTopLeft().get_j()/sqrt(pow(dot_search.getBBox().getTopLeft().get_i(),2) + pow(dot_search.getBBox().getTopLeft().get_j(),2));;
+	      detected_features.b.z = 1/sqrt(pow(dot_search.getBBox().getTopLeft().get_i(),2) + pow(dot_search.getBBox().getTopLeft().get_j(),2));;
+	      cylinder_pos_pub_.publish(detected_features);
               double finalTime = ros::Time::now().toSec();
-	      cout<<1.0/(finalTime-begin)<<endl;
+	      cout<<1.0/((intermidiate1-begin) + (finalTime-intermidiate2))<<endl;
 	      vpDisplay::flush(I);
 
 
@@ -254,7 +268,7 @@ void cylinder_detection::imgproc_opencv(const Mat &src)
 		array.data.push_back(otherLine[2]);
 		array.data.push_back(otherLine[3]); //Store data
 		cout<<"data:"<<array.data[0]<<endl;
-		cylinder_pos_pub_.publish(array); //Publish data
+		//cylinder_pos_pub_.publish(array); //Publish data
   	}
 	double finalTime = ros::Time::now().toSec();
 	

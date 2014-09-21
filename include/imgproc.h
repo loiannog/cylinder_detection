@@ -25,6 +25,7 @@ using namespace cv;
 #include <visp/vpDisplayGDI.h>
 #include <visp/vpDisplayX.h>
 #include <visp/vpDot2.h>
+#include <cylinder_msgs/ImageFeatures.h>
 #include <iostream>
 #define pi 3.141592653589
 
@@ -67,6 +68,7 @@ class cylinder_detection : public nodelet::Nodelet
 
 	  image_transport::Publisher image_thresholded_pub_;
 	    ros::Publisher cylinder_pos_pub_;
+	    cylinder_msgs::ImageFeatures detected_features;
 
 	void onInit(void);
 	int nbLines;

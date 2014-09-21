@@ -60,7 +60,8 @@ void cylinder_detection::onInit(void)
     cvStartWindowThread();*/
   image_transport::ImageTransport it(priv_nh);
   image_thresholded_pub_ = it.advertise("/image_thresholded", 1);
-  cylinder_pos_pub_ = priv_nh.advertise<std_msgs::Float32MultiArray>("/cylinder_position_testing", 5); 
+  //cylinder_pos_pub_ = priv_nh.advertise<std_msgs::Float32MultiArray>("/cylinder_position_testing", 5); 
+  cylinder_pos_pub_ = priv_nh.advertise<cylinder_msgs::ImageFeatures>("cylinder_features", 5); 
 
   sub_image_ = priv_nh.subscribe("image", 1,  &cylinder_detection::camera_callback, this);
 }

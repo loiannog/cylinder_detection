@@ -13,6 +13,7 @@
   <depend package="image_transport"/>
   <depend package="geometry_msgs"/>
   <depend package="sensor_msgs"/>
+  <depend package="cylinder_msgs"/>
 
 
   <!--<depend package="common_rosdeps"/>-->
