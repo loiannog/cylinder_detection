@@ -11,6 +11,7 @@ using namespace cv;
 #include <ros/ros.h>
 #include <nodelet/nodelet.h>
 #include <image_transport/image_transport.h>
+#include <image_transport/camera_subscriber.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/image_encodings.h>
 #include <std_msgs/Float32MultiArray.h>
@@ -25,7 +26,7 @@ using namespace cv;
 #include <visp/vpDisplayGDI.h>
 #include <visp/vpDisplayX.h>
 #include <visp/vpDot2.h>
-#include <cylinder_msgs/ImageFeatures.h>
+#include </home/giuseppe/git/cylinder_perching_3D/cylinder_msgs/msg_gen/cpp/include/cylinder_msgs/ImageFeatures.h>
 #include <iostream>
 #define pi 3.141592653589
 
@@ -75,14 +76,16 @@ class cylinder_detection : public nodelet::Nodelet
         vpDot2 dot_search;
         vpImagePoint init_point_blob;
 	std::vector<vpMeLine> line_buffer;
-	void imgproc_visp(const cv::Mat &img);
+	void imgproc_visp(const cv::Mat &img,  const ros::Time& frame_time);
         void imgproc_opencv(const cv::Mat &img);
-
+	void init_detection_hough(const Mat &src, Vec4i& P1, Vec4i& P2, int& size);
+	double P[12];
+	int method;
+	int size;
 
  private:
-  void camera_callback(const sensor_msgs::Image::ConstPtr &img);
-  image_transport::CameraSubscriber sub_camera_;
-  ros::Subscriber sub_image_;
+  void camera_callback(const sensor_msgs::ImageConstPtr &img);
+  image_transport::Subscriber sub_camera_;
 };
 
 typedef struct _Patch
