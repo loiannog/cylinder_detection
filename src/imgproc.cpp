@@ -9,6 +9,8 @@
 #include <ros/ros.h>
 #include <nodelet/nodelet.h>
 #include <boost/array.hpp>
+#include <cv_bridge/cv_bridge.h>
+#include <sensor_msgs/image_encodings.h>
 //#define automatic_detection
 #define hough_detection
 // Set dot characteristics for the auto detection
@@ -40,7 +42,7 @@ void cylinder_detection::imgproc_visp(const Mat &src, const ros::Time& frame_tim
    
    d.init(I, 0, 0, "") ;
    
-   vpDisplay::display(I);
+   //vpDisplay::display(I);
 
 
    vpMe me;
@@ -196,7 +198,7 @@ else{//method3
 	{
 
 	  line[i].setMe(&me);
-	  line[i].setDisplay(vpMeSite::RANGE_RESULT);
+	  //line[i].setDisplay(vpMeSite::RANGE_RESULT);
 	  try
 	   {
 	  line[i].initTracking(I,init_points[k],init_points[k+1]);
@@ -224,7 +226,7 @@ else{//method3
 	       {
 		// track the blob
 		dot_search.track(I);
-		dot_search.display(I, vpColor::red) ;
+		//dot_search.display(I, vpColor::red) ;
 
 		}
 		  catch (const std::exception &e)
@@ -236,7 +238,7 @@ else{//method3
 	     try
 	       {
 		line_buffer[i].track(I);
-		line_buffer[i].display(I, vpColor::green) ;
+		//line_buffer[i].display(I, vpColor::green) ;
 
 		}
 		  catch (const std::exception &e)
@@ -245,6 +247,13 @@ else{//method3
 		  }
 	      }
 	      }
+		//publish the image for the moment
+		cv::Mat output_image;
+                vpImageConvert::convert(I, output_image);
+		cv_bridge::CvImage out_msg;
+		out_msg.image  = output_image; // Your cv::Mat
+		image_thresholded_pub_.publish(out_msg.toImageMsg());
+
 	      //after detecting lines it is now necessary to identify the corner of the rectangle for the tangent point
 	      double alpha = 0.5*atan(2*dot_search.mu11/(dot_search.mu02-dot_search.mu20));
 	      double w_c = (dot_search.getBBox().getWidth()/fx - tan(alpha)*dot_search.getBBox().getHeight()/fy)/(cos(alpha)-tan(alpha)*sin(alpha));
@@ -287,7 +296,7 @@ else{//method3
 	      detected_features.b.y = dst_P[0].y/sqrt(pow(dst_P[0].x,2) + pow(dst_P[0].y,2) + 1);
 	      detected_features.b.z = 1/sqrt(pow(dst_P[0].x,2) + pow(dst_P[0].y,2) + 1);
 	      cylinder_pos_pub_.publish(detected_features);
-	      vpDisplay::flush(I);
+	      //vpDisplay::flush(I);
 
 
 }
@@ -408,8 +417,8 @@ void cylinder_detection::init_detection_hough(const Mat &src, Vec4i& P1, Vec4i&P
 	circle(cdst, Point(P2[0],P2[1]), 5, Scalar(255,0,0));
 	circle(cdst, Point(P2[2],P2[3]), 5, Scalar(255,0,0));
 	//cout<<1.0/(finalTime-begin)<<endl;
-	cv::imshow("image",cdst); //Show the resulting image
-  	cv::waitKey(0); 
+	//cv::imshow("image",cdst); //Show the resulting image
+  	//cv::waitKey(0); 
 
 
 }

@@ -18,7 +18,7 @@ void cylinder_detection::onInit(void)
 {
   ros::NodeHandle priv_nh(getPrivateNodeHandle());
   std::string path_file;
-  priv_nh.param<string>("path_file", path_file, "/home/prisma-airobots/AIRobots_Unina_workspace/AIRobots_UNINA/vision_perching/");
+  priv_nh.param<string>("path_file", path_file, "/home/xua/git/cylinder_detection/src");
   priv_nh.param<int>("image_threshold", image_threshold, 70);//Surface of a dot to search in an area.
   priv_nh.param<double>("opt_sizePrecision", opt_sizePrecision, 0.65);
   priv_nh.param<double>("opt_grayLevelPrecision", opt_grayLevelPrecision, 0.85);
@@ -60,7 +60,7 @@ void cylinder_detection::onInit(void)
     cvNamedWindow("Blurred");
     cvStartWindowThread();*/
   image_transport::ImageTransport it(priv_nh);
-  image_thresholded_pub_ = it.advertise("/image_thresholded", 1);
+  image_thresholded_pub_ = it.advertise("/image_detected", 1);
   //cylinder_pos_pub_ = priv_nh.advertise<std_msgs::Float32MultiArray>("/cylinder_position_testing", 5); 
     cylinder_pos_pub_ = priv_nh.advertise<cylinder_msgs::ImageFeatures>("cylinder_features", 5); 
     image_transport::TransportHints hints("raw", ros::TransportHints().tcpNoDelay(), priv_nh);
