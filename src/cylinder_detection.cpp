@@ -28,7 +28,7 @@ void cylinder_detection::onInit(void)
   priv_nh.param<int>("width_min", width_min, 0);//Coordinate (column) of the upper-left area corner.
   priv_nh.param<int>("width_max", width_max,752);//Width or the area in which a dot is searched.
   priv_nh.param<int>("height_min", height_min, 0);//Coordinate (row) of the upper-left area corner.
-  priv_nh.param<int>("GrayLevelMin", GrayLevelMin, 1);//GrayLevel min.
+  priv_nh.param<int>("GrayLevelMin", GrayLevelMin, 250);//GrayLevel min.
   priv_nh.param<int>("GrayLevelMax", GrayLevelMax, 255);//GrayLevel max.
   priv_nh.param<int>("Surface", Surface, 124);//Surface of a dot to search in an area.
   priv_nh.param<double>("fx", fx, 621.755015);//Surface of a dot to search in an area.
@@ -52,6 +52,7 @@ void cylinder_detection::onInit(void)
   priv_nh.param<int>("kernelSize",kernelSize,3);
   priv_nh.param<int>("sigmaX",sigmaX,0);
   priv_nh.param<int>("nbLines",nbLines,2);
+  priv_nh.param<int>("method",method,1);
 
   /*cvNamedWindow("Original image");
     cvNamedWindow("Threshold");
@@ -61,27 +62,28 @@ void cylinder_detection::onInit(void)
   image_transport::ImageTransport it(priv_nh);
   image_thresholded_pub_ = it.advertise("/image_thresholded", 1);
   //cylinder_pos_pub_ = priv_nh.advertise<std_msgs::Float32MultiArray>("/cylinder_position_testing", 5); 
-  cylinder_pos_pub_ = priv_nh.advertise<cylinder_msgs::ImageFeatures>("cylinder_features", 5); 
+    cylinder_pos_pub_ = priv_nh.advertise<cylinder_msgs::ImageFeatures>("cylinder_features", 5); 
+    image_transport::TransportHints hints("raw", ros::TransportHints().tcpNoDelay(), priv_nh);
+    sub_camera_ = it.subscribe("image", 2, &cylinder_detection::camera_callback, this, hints);
 
-  sub_image_ = priv_nh.subscribe("image", 1,  &cylinder_detection::camera_callback, this);
 }
 
 
-void cylinder_detection::camera_callback(const sensor_msgs::Image::ConstPtr &img)
-//,
-	//	const sensor_msgs::CameraInfo::ConstPtr &c)
+void cylinder_detection::camera_callback(const sensor_msgs::ImageConstPtr &img)
 {
   static bool initialized = false;
   static ros::Time initial_timestamp;
   if(!initialized)
   {
     initial_timestamp = img->header.stamp;
+    //memcpy(&P[0],&(c->P[0]),8*sizeof(double));
     initialized = true;
+
   }
   cv::Mat src(cv::Size(img->width, img->height), CV_8UC1,
               const_cast<uchar*>(&img->data[0]), img->step);
     //cv::Mat src_sub = src.rowRange(src.rows/2 - 60, src.rows/2 + 60);
- imgproc_visp(src);
+ imgproc_visp(src, img->header.stamp);
 }
 
 #include <pluginlib/class_list_macros.h>
