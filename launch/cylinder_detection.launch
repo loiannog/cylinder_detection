@@ -1,6 +1,6 @@
 <launch>
   <node pkg="nodelet" type="nodelet" name="manager_nodelet"  args="manager" output="screen">
-  <param name="num_worker_threads" type="int" value="4"/>
+  <param name="num_worker_threads" type="int" value="8"/>
   </node>
     
     <!--Camera settings-->
@@ -9,15 +9,15 @@
     <arg name="camera" default="mv_$(arg serial)"/>
     <arg name="calib_url"
         default="package://bluefox2/calib/calib_$(arg serial).yml"/>
-    <arg name="fps" default="60"/>
+    <arg name="fps" default="70"/>
     <arg name="color" default="false"/>
     <arg name="binning" default="false"/>
-    <arg name="trigger" default="1"/>
+    <arg name="trigger" default="0"/>
     <arg name="auto_fix_expose" default="true"/>
-    <arg name="expose_us" default="20000"/>
+    <arg name="expose_us" default="15000"/>
     <arg name="gain_db" default="0.0"/>
     <arg name="hdr" default="false"/>
-    <arg name="boost" default="false"/>
+    <arg name="boost" default="true"/>
     
     
     <!--Run as standalone nodelet-->
@@ -42,16 +42,16 @@
   <node pkg="nodelet" type="nodelet" name="rectify_mono"
         args="load image_proc/rectify manager_nodelet">
     <remap from="image_mono" to="$(arg camera)/image_raw" />
-    <remap from="image_rect" to="image_rect_mono" />
+    <remap from="image_rect" to="$(arg camera)/image_rect_mono" />
   </node>
   
-  <!--<node pkg="nodelet"
+   <node pkg="nodelet"
         type="nodelet"
         name="cylinder_detection"
-        args="load cylinder_detection/cylinder_detection manager_nodelet"
+        args="standalone cylinder_detection/cylinder_detection"
         output="screen">
     <rosparam file="$(find cylinder_detection)/src/parameter.yaml" />
-    <remap from="~image" to="/nanoplus/image_zeromq_to_ros/image_raw"/>
-</node>-->
+    <remap from="~image" to="$(arg camera)/image_rect_mono"/>
+</node>
 
 </launch>

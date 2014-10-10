@@ -64,7 +64,7 @@ void cylinder_detection::onInit(void)
   //cylinder_pos_pub_ = priv_nh.advertise<std_msgs::Float32MultiArray>("/cylinder_position_testing", 5); 
     cylinder_pos_pub_ = priv_nh.advertise<cylinder_msgs::ImageFeatures>("cylinder_features", 5); 
     image_transport::TransportHints hints("raw", ros::TransportHints().tcpNoDelay(), priv_nh);
-    sub_camera_ = it.subscribe("image", 2, &cylinder_detection::camera_callback, this, hints);
+    sub_camera_ = it.subscribe("image", 2, &cylinder_detection::camera_callback, this);
 
 }
 
