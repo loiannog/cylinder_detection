@@ -17,6 +17,7 @@
 using namespace std;
 using namespace cv;
 using namespace ros;
+bool visualization  = true;
 bool points_init = false;
    vpDisplayOpenCV d;
 int counter;
@@ -42,42 +43,38 @@ void cylinder_detection::imgproc_visp(const Mat &src, const ros::Time& frame_tim
   double begin = ros::Time::now().toSec();
   Mat blurred, thresholded, dst, cdst; //Image matrices
   GaussianBlur(src, blurred, Size(kernelSize,kernelSize), sigmaX);//clean the image
-  threshold(blurred, thresholded, thresh_threshold, maxThreshold, THRESH_TOZERO);//threshold the image
+  threshold(blurred, thresholded, thresh_threshold, maxThreshold, THRESH_BINARY);//threshold the image
   
 
    vpImage<unsigned char> I;
    vpImageConvert::convert(thresholded, I);
-   
-  // d.init(I, 0, 0, "") ;
-   
-   //vpDisplay::display(I);
-
+   if(visualization == true){
+   d.init(I, 0, 0, "") ;
+   vpDisplay::display(I);
+}
 
    vpMe me;
    vpMeLine line[nbLines];
 
-  //Set the tracking parameters.
-   me.setRange(40);//set the search range on both sides of the reference pixel
-   me.setSampleStep(5);//set the minimum distance in pixel between two discretized points.
-   //each pixel along the normal we will compute the oriented convolution
-   me.setThreshold(15000);//the pixel that will be selected by the moving edges algorithm will be the one that has a convolution higher than 15000
-  me.setNbTotalSample(100);
-    me.setPointsToTrack(100);
+		  //Set the tracking parameters.
+		  me.setRange(30);//set the search range on both sides of the reference pixel
+		  me.setSampleStep(3);//set the minimum distance in pixel between two discretized points.
+		  //each pixel along the normal we will compute the oriented convolution
+		  me.setThreshold(15000);//the pixel that will be selected by the moving edges algorithm will be the one that has a convolution higher than 15000
+		  me.setNbTotalSample(100);
+		  me.setPointsToTrack(100);
 
-   //Initialize the tracking.
-   	  std::list<vpDot2> list_d;//list of elements in constrast respect ot the background
+		  //Initialize the tracking.
+		  std::list<vpDot2> list_d;//list of elements in constrast respect ot the background
 
-	      //initialize parameters for the dot
-	          dot_search.setGrayLevelMin(GrayLevelMin);
-	          dot_search.setGrayLevelMax(GrayLevelMax);
+		  //initialize parameters for the dot
+		  dot_search.setGrayLevelMin(GrayLevelMin);
+		  dot_search.setGrayLevelMax(GrayLevelMax);
 		  //dot_search.setGrayLevelPrecision(opt_grayLevelPrecision);
 		  dot_search.setEllipsoidShapePrecision(opt_ellipsoidShapePrecision);
-
 		  //dot_search.setSizePrecision(opt_sizePrecision);
-
-	      
-	     vector<vpImagePoint> init_points;
-	    init_points.resize(4);
+		  vector<vpImagePoint> init_points;
+		  init_points.resize(4);
 //initialization
 if(!points_init)
 	  {
@@ -88,11 +85,7 @@ if(!points_init)
 if(method==0){
 	  try
 	   {
-
-		  //while(list_d.size() == 0){
-		  //dot_search.searchDotsInArea(I, width_min,  height_min,  width_max, height_max, list_d) ;
 		  dot_search.initTracking(I) ;
-
 	   }
 	   
 	  catch (int e)
@@ -120,9 +113,8 @@ if(method==0){
 	} 
  
 else if(method == 1){
-  //use Hough transform to initilize lines
-  		
-	    Vec4i P1;
+	    //use Hough transform to initilize lines
+  	    Vec4i P1;
 	    Vec4i P2;
 	    int size = 0;
 	    double max_area = 0;
@@ -134,7 +126,7 @@ else if(method == 1){
 	     if(size!=2)
          return;
 	    
-      init_points[0].set_ij(P1[1], P1[0]);
+	    init_points[0].set_ij(P1[1], P1[0]);
 	    init_points[1].set_ij(P1[3], P1[2]);
 	    init_points[2].set_ij(P2[1], P2[0]);
 	    init_points[3].set_ij(P2[3], P2[2]);
@@ -143,32 +135,6 @@ else if(method == 1){
 	    cout<<init_points[2]<<endl;
 	    cout<<init_points[3]<<endl;
 	    
-	    
-  	 try
-	   {
-		 // init_point_blob.set_i(P1[3]);
-		 // init_point_blob.set_j(P1[2]);
-		 // dot_search.initTracking(I,init_point_blob);
-		  		  
-		  /*while(list_d.size() == 0){
-		  dot_search.searchDotsInArea(I, width_min,  height_min,  width_max, height_max, list_d);
-		  for (std::list<vpDot2>::iterator it = list_d.begin(); it != list_d.end(); it++){
-		  if(it->getArea() > max_area){
-		  init_point_blob.set_i(it->getCog().get_i());
-	          init_point_blob.set_j(it->getCog().get_j());
-		   max_area = it->getArea();
-		  }
-		  }
-		 cout<<"init_point_blob:"<<init_point_blob.get_i()<<" "<<init_point_blob.get_j()<<endl;
-	          dot_search.initTracking(I,init_point_blob);
-		  cout<<"list_size:"<<list_d.size()<<endl;
-		  cout<<"searching the first dot"<<endl;
-		  } */
-	    }
-  catch (int e)
-	   {
-	     cout << "An exception occurred detecting blob " << e << endl;
-	   }  
 	  } 
 	    catch (int e)
 	   {
@@ -204,7 +170,8 @@ else{//method3
 	{
 
 	  line[i].setMe(&me);
-	  //line[i].setDisplay(vpMeSite::RANGE_RESULT);
+	  if(visualization == true)
+	  line[i].setDisplay(vpMeSite::RANGE_RESULT);
 	  try
 	  {
 	    line[i].initTracking(I,init_points[k],init_points[k+1]);
@@ -222,29 +189,18 @@ else{//method3
 
 	    //dot_search.track(I);//track the dot
 	    //after initial tracking activate moment computation
-  	    //dot_search.setComputeMoments(1);
 
-	    
       }
 
-  else { //after initialization
-	     //try
-	       //{
-		// track the blob
-		//dot_search.track(I);
-		//dot_search.display(I, vpColor::red) ;
-
-		//}
-		  //catch (const std::exception &e)
-		//{
-	       	 //cout<<"tracking blob failed"<<endl;
-		  //}
+  else { 
+    
 	      for (int i =0; i < nbLines; i++)
 	      {
 	     try
 	       {
 		line_buffer[i].track(I);
-		//line_buffer[i].display(I, vpColor::green) ;
+		   if(visualization == true)
+		  line_buffer[i].display(I, vpColor::green) ;
 
 		}
 		  catch (const std::exception &e)
@@ -258,21 +214,7 @@ else{//method3
 		vpImageConvert::convert(I,Irgba); // convert a greyscale to a color image.
 		cv::Mat output_image(480, 752, CV_32F);
                 vpImageConvert::convert(Irgba, output_image);
-		//circle(output_image, Point(dot_search.getCog().get_j() ,dot_search.getCog().get_i() ), 3, Scalar(0,0,255), -1);			      
-	      	//sensor_msgs::Image output_ros;
-		//cv_bridge::CvImage out_msg;
-		//out_msg.encoding = sensor_msgs::image_encodings::RGB8; // Or whatever
-		//out_msg.image  = output_image; // Your cv::Mat
-		//image_thresholded_pub_.publish(out_msg.toImageMsg());
-	      
-
-
-	      //after detecting lines it is now necessary to identify the corner of the rectangle for the tangent point
-	      //double alpha = 0.5*atan(2*dot_search.mu11/(dot_search.mu20-dot_search.mu02));
-              //alpha = M_PI/2 + alpha;
-	     // double w_c = (dot_search.getBBox().getHeight() - (dot_search.getBBox().getWidth())/sin(alpha))/(cos(alpha)-tan(alpha));
-	     //double h_c = (dot_search.getBBox().getWidth())/sin(alpha) - w_c*tan(alpha);
-
+	     
 
 	      //project rho on the axes and transform to normalized image coordinates
 	      const cv:: Mat cM = (cv::Mat_<double>(3,3) << fx, 0.0, cx, 0.0, fy, cy, 0.0, 0.0, 1.0);
@@ -298,9 +240,9 @@ else{//method3
               circle(output_image, Point(cx,cy), 3, Scalar(255,255,0), -1);
               cv::line(output_image, Point(P[0].x, P[0].y), Point(P[1].x, P[1].y), Scalar(0,0,255), 2, CV_AA);
               cv::line(output_image, Point(P[2].x, P[2].y), Point(P[3].x, P[3].y), Scalar(255,0,0), 2, CV_AA); //Draw the lines
-                sensor_msgs::Image output_ros;
-                cv_bridge::CvImage out_msg;
-                out_msg.encoding = sensor_msgs::image_encodings::RGB8; // Or whatever
+              sensor_msgs::Image output_ros;
+              cv_bridge::CvImage out_msg;
+              out_msg.encoding = sensor_msgs::image_encodings::RGB8; // Or whatever
               vector<Point2f> dst_lines_point;
               dst_lines_point.resize(4);
               undistortPoints(P, dst_lines_point, cM, Dl);
@@ -309,51 +251,43 @@ else{//method3
               double theta2 = atan2(dst_lines_point[3].y - dst_lines_point[2].y, dst_lines_point[3].x - dst_lines_point[2].x);
               // Angle of the perpendicular to the line 
               theta1 = theta1 + M_PI/2;
-	            theta2 = theta2 + M_PI/2;
+	      theta2 = theta2 + M_PI/2;
               double norm_rho1 = dst_lines_point[0].x*cos(theta1) + dst_lines_point[0].y*sin(theta1);
               double norm_rho2 = dst_lines_point[2].x*cos(theta2) + dst_lines_point[2].y*sin(theta2);
-	          
-              //double rho_1x = line_buffer[0].getRho()*sin(line_buffer[0].getTheta())/fx;
-	      //double rho_1y = line_buffer[0].getRho()*cos(line_buffer[0].getTheta())/fy;
-	      //double rho_2x = line_buffer[1].getRho()*sin(line_buffer[1].getTheta())/fx;
-	      //double rho_2y = line_buffer[1].getRho()*cos(line_buffer[1].getTheta())/fy;
-	      //double norm_rho1 = sqrt(pow(rho_1x,2)+pow(rho_1y,2));
-	      //double norm_rho2 = sqrt(pow(rho_2x,2)+pow(rho_2y,2));
-	     
-        // Change for Chaumette convention 
+	       
+	      // Change for Chaumette convention 
 	      while(theta1 < 0)
-        {
-          norm_rho1 = -norm_rho1;
-          theta1 = theta1 + M_PI;
-        }
+	      {
+		norm_rho1 = -norm_rho1;
+		theta1 = theta1 + M_PI;
+	      }
 	      while(theta2 > 0)
 	      {
-		      norm_rho2 = -norm_rho2;
-		      theta2 = theta2 - M_PI;
+		norm_rho2 = -norm_rho2;
+		theta2 = theta2 - M_PI;
 	      }
 
-        //give the output
+	      //give the output
 	      detected_features.stamp = frame_time;
 	      detected_features.rho1 = norm_rho1;
-	      detected_features.theta1 = theta1;//line_buffer[0].getTheta();
+	      detected_features.theta1 = theta1;
 	      detected_features.rho2 = norm_rho2;
-	      detected_features.theta2 = theta2;//line_buffer[1].getTheta();
+	      detected_features.theta2 = theta2;
 
 	      vector<Point2f> T_P;
               //vector<Point2f> C_G;
 	      T_P.resize(1);
-              //C_G.resize(1);
-	      //C_G[0].x =  dot_search.getCog().get_j();
-	      //C_G[0].y =  dot_search.getCog().get_i();
-              //double d = sqrt(pow(h_c/2,2) + pow(w_c/2,2));
-              //double beta = atan(w_c/(h_c*d));
 	      T_P[0].x = P[1].x; //C_G[0].x + d*cos(alpha-beta);
 	      T_P[0].y = P[1].y;//C_G[0].y + d*sin(alpha-beta);
-               circle(output_image, Point(T_P[0].x,T_P[0].y), 3, Scalar(0,255,0), -1);
-	        out_msg.image  = output_image; // Your cv::Mat
-                image_thresholded_pub_.publish(out_msg.toImageMsg());
+              circle(output_image, Point(T_P[0].x,T_P[0].y), 3, Scalar(0,255,0), -1);
+	      out_msg.image  = output_image; // Your cv::Mat
+	      if(visualization == true){
+	      cv::imshow("output_image",output_image); //Show the resulting image
+  	      cv::waitKey(1);
+	      }
+              image_thresholded_pub_.publish(out_msg.toImageMsg());
 
-    //undistort point
+	      //undistort point
 	      vector<Point2f> dst_P;
 	      dst_P.resize(1);
 	      undistortPoints(T_P, dst_P, cM, Dl);
@@ -361,7 +295,8 @@ else{//method3
 	      detected_features.b.y = dst_P[0].y/sqrt(pow(dst_P[0].x,2) + pow(dst_P[0].y,2) + 1);
 	      detected_features.b.z = 1/sqrt(pow(dst_P[0].x,2) + pow(dst_P[0].y,2) + 1);
 	      cylinder_pos_pub_.publish(detected_features);
-	      //vpDisplay::flush(I);
+	         if(visualization == true)
+	      vpDisplay::flush(I);
 
 
 }
