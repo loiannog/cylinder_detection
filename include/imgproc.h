@@ -17,6 +17,8 @@ using namespace cv;
 #include <std_msgs/Float32MultiArray.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <boost/thread.hpp>
+#include <boost/date_time.hpp>
 #include <visp/vpConfig.h>
 #include <visp/vpConfig.h>
 #include <visp/vpImage.h>
@@ -26,7 +28,7 @@ using namespace cv;
 #include <visp/vpDisplayGDI.h>
 #include <visp/vpDisplayX.h>
 #include <visp/vpDot2.h>
-#include <cylinder_msgs/ImageFeatures.h>
+#include </home/giuseppe/git/cylinder_perching_3D/cylinder_msgs/msg_gen/cpp/include/cylinder_msgs/ImageFeatures.h>
 #include <iostream>
 #define pi 3.141592653589
 
@@ -75,7 +77,8 @@ class cylinder_detection : public nodelet::Nodelet
 	int nbLines;
         vpDot2 dot_search;
         vpImagePoint init_point_blob;
-	std::vector<vpMeLine> line_buffer;
+	std::vector<vpMeLine*> line_buffer;
+	std::vector<boost::thread*> line_tracker_buff_thread;
 	void imgproc_visp(const cv::Mat &img,  const ros::Time& frame_time);
         void imgproc_opencv(const cv::Mat &img);
 	void init_detection_hough(const Mat &src, Vec4i& P1, Vec4i& P2, int& size);
