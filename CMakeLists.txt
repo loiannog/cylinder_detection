@@ -10,17 +10,16 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 #set(ROS_BUILD_TYPE RelWithDebInfo)
 
 rosbuild_init()
+#rosbuild_add_boost_directories()
 
 #set the default path for built executables to the "bin" directory
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-#set the default path for built executables to the "bin" directory
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-#set the default path for built libraries to the "lib" directory
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+find_package(OpenCV REQUIRED)
 
+include_directories(${OpenCV_INCLUDE_DIRS})
 find_package(OpenCV REQUIRED)
 FIND_PACKAGE(VISP REQUIRED)
 IF(VISP_FOUND)
@@ -29,4 +28,5 @@ IF(VISP_FOUND)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 rosbuild_add_library(cylinder_detection src/cylinder_detection.cpp src/imgproc.cpp)
+rosbuild_link_boost(cylinder_detection thread system signals)
 target_link_libraries(cylinder_detection ${OpenCV_LIBS})
