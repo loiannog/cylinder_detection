@@ -164,28 +164,30 @@ else{//method3
 	    cout<<"valuesl:"<<box.getTopLeft().get_i()<<" "<<box.getTopLeft().get_j()<<endl;
 
 }	  
-	  	
+       line_tracker_buff_thread.resize(nbLines);
+       line_buffer.resize(nbLines);
        int k = 0;
 	for (int i =0; i < nbLines; i++)
 	{
-
-	  line[i].setMe(&me);
+          line_buffer[i] = new vpMeLine();
+	  line_buffer[i]->setMe(&me);
 	  if(visualization == true)
-	  line[i].setDisplay(vpMeSite::RANGE_RESULT);
+	  line_buffer[i]->setDisplay(vpMeSite::RANGE_RESULT);
+	  //line_buffer.push_back(line[i]);
 	  try
 	  {
-	    line[i].initTracking(I,init_points[k],init_points[k+1]);
+	    //line_buffer[i]->initTracking(I,init_points[k],init_points[k+1]);
+	 line_tracker_buff_thread[i] = new boost::thread(boost::bind(&vpMeLine::initTracking, line_buffer[i], I, init_points[k],init_points[k+1]));
+	 line_tracker_buff_thread[i]->join(); 
+	    
 	  }
 	  catch (int e)
 	  {
 	    cout << "An exception occurred during initial line tracking " << e << endl;
 	  } 
-	  line[i].track(I);
-	  line_buffer.push_back(line[i]);
 	  points_init = true;
 	  k = k+2;
 	}
-
 
 	    //dot_search.track(I);//track the dot
 	    //after initial tracking activate moment computation
@@ -198,10 +200,11 @@ else{//method3
 	      {
 	     try
 	       {
-		line_buffer[i].track(I);
-		   if(visualization == true)
-		  line_buffer[i].display(I, vpColor::green) ;
+	      line_tracker_buff_thread[i] = new boost::thread(&vpMeLine::track, line_buffer[i], I);
+	      line_tracker_buff_thread[i]->join();
 
+		   if(visualization == true)
+		  line_buffer[i]->display(I, vpColor::green) ;
 		}
 		  catch (const std::exception &e)
 		{
@@ -223,8 +226,8 @@ else{//method3
               vpImagePoint point12;
               vpImagePoint point21;
               vpImagePoint point22;
-              line_buffer[0].getExtremities(point11,point12);
-              line_buffer[1].getExtremities(point21,point22);
+              line_buffer[0]->getExtremities(point11,point12);
+              line_buffer[1]->getExtremities(point21,point22);
               vector<Point2f> P;
               P.resize(4);     
 	            
