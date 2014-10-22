@@ -17,7 +17,7 @@
 using namespace std;
 using namespace cv;
 using namespace ros;
-bool visualization  = false;
+bool visualization  = true;
 bool points_init = false;
    vpDisplayOpenCV d;
 int counter;
@@ -53,12 +53,12 @@ void cylinder_detection::imgproc_visp(const Mat &src, const ros::Time& frame_tim
    vpDisplay::display(I);
 }
 
-   		   vpMe me;
-		   vpMeLine line[nbLines];
+   vpMe me;
+   vpMeLine line[nbLines];
 
 		  //Set the tracking parameters.
 		  me.setRange(30);//set the search range on both sides of the reference pixel
-		  me.setSampleStep(4);//set the minimum distance in pixel between two discretized points.
+		  me.setSampleStep(3);//set the minimum distance in pixel between two discretized points.
 		  //each pixel along the normal we will compute the oriented convolution
 		  me.setThreshold(15000);//the pixel that will be selected by the moving edges algorithm will be the one that has a convolution higher than 15000
 		  me.setNbTotalSample(100);

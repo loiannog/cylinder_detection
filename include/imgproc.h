@@ -28,7 +28,7 @@ using namespace cv;
 #include <visp/vpDisplayGDI.h>
 #include <visp/vpDisplayX.h>
 #include <visp/vpDot2.h>
-#include </home/giuseppe/git/cylinder_perching_3D/cylinder_msgs/msg_gen/cpp/include/cylinder_msgs/ImageFeatures.h>
+#include <cylinder_msgs/ImageFeatures.h>
 #include <iostream>
 #define pi 3.141592653589
 
