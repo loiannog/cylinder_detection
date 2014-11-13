@@ -17,7 +17,8 @@
 using namespace std;
 using namespace cv;
 using namespace ros;
-bool visualization  = true;
+bool visualization  = false;
+bool debug_vis = true;
 bool points_init = false;
    vpDisplayOpenCV d;
 int counter;
@@ -43,7 +44,7 @@ void cylinder_detection::imgproc_visp(const Mat &src, const ros::Time& frame_tim
   double begin = ros::Time::now().toSec();
   Mat blurred, thresholded, dst, cdst; //Image matrices
   GaussianBlur(src, blurred, Size(kernelSize,kernelSize), sigmaX);//clean the image
-  threshold(blurred, thresholded, thresh_threshold, maxThreshold, THRESH_BINARY);//threshold the image
+  threshold(blurred, thresholded, thresh_threshold, maxThreshold, THRESH_TOZERO);//threshold the image
   
 
    vpImage<unsigned char> I;
@@ -53,16 +54,17 @@ void cylinder_detection::imgproc_visp(const Mat &src, const ros::Time& frame_tim
    vpDisplay::display(I);
 }
 
-   vpMe me;
-   vpMeLine line[nbLines];
+   		   vpMe me;
+		   //vpMeLine line[nbLines];
 
 		  //Set the tracking parameters.
 		  me.setRange(30);//set the search range on both sides of the reference pixel
-		  me.setSampleStep(3);//set the minimum distance in pixel between two discretized points.
+		  //me.setSampleStep(4);//set the minimum distance in pixel between two discretized points.
 		  //each pixel along the normal we will compute the oriented convolution
 		  me.setThreshold(15000);//the pixel that will be selected by the moving edges algorithm will be the one that has a convolution higher than 15000
-		  me.setNbTotalSample(100);
-		  me.setPointsToTrack(100);
+		  me.setNbTotalSample(400);
+		  me.setPointsToTrack(400);
+		  
 
 		  //Initialize the tracking.
 		  std::list<vpDot2> list_d;//list of elements in constrast respect ot the background
@@ -178,7 +180,7 @@ else{//method3
 	  {
 	    //line_buffer[i]->initTracking(I,init_points[k],init_points[k+1]);
 	 line_tracker_buff_thread[i] = new boost::thread(boost::bind(&vpMeLine::initTracking, line_buffer[i], I, init_points[k],init_points[k+1]));
-	 line_tracker_buff_thread[i]->join(); 
+	 //line_tracker_buff_thread[i]->join(); 
 	    
 	  }
 	  catch (int e)
@@ -188,6 +190,9 @@ else{//method3
 	  points_init = true;
 	  k = k+2;
 	}
+              for (int i =0; i < nbLines; i++)
+         line_tracker_buff_thread[i]->join(); 
+
 
 	    //dot_search.track(I);//track the dot
 	    //after initial tracking activate moment computation
@@ -201,7 +206,6 @@ else{//method3
 	     try
 	       {
 	      line_tracker_buff_thread[i] = new boost::thread(&vpMeLine::track, line_buffer[i], I);
-	      line_tracker_buff_thread[i]->join();
 
 		   if(visualization == true)
 		  line_buffer[i]->display(I, vpColor::green) ;
@@ -212,12 +216,17 @@ else{//method3
 		  }
 	      }
 	      }
+              for (int i =0; i < nbLines; i++)
+              line_tracker_buff_thread[i]->join();
+                cv::Mat output_image(480, 752, CV_32F);
+              cv_bridge::CvImage out_msg;
+
 		//publish the image for the moment
-		vpImage<vpRGBa> Irgba; // a color image
+		if(debug_vis == true){
+                vpImage<vpRGBa> Irgba; // a color image
 		vpImageConvert::convert(I,Irgba); // convert a greyscale to a color image.
-		cv::Mat output_image(480, 752, CV_32F);
                 vpImageConvert::convert(Irgba, output_image);
-	     
+	      }
 
 	      //project rho on the axes and transform to normalized image coordinates
 	      const cv:: Mat cM = (cv::Mat_<double>(3,3) << fx, 0.0, cx, 0.0, fy, cy, 0.0, 0.0, 1.0);
@@ -240,12 +249,14 @@ else{//method3
               P[3].x = point22.get_j();         
               P[3].y = point22.get_i();
              
+                if(debug_vis == true){
               circle(output_image, Point(cx,cy), 3, Scalar(255,255,0), -1);
               cv::line(output_image, Point(P[0].x, P[0].y), Point(P[1].x, P[1].y), Scalar(0,0,255), 2, CV_AA);
               cv::line(output_image, Point(P[2].x, P[2].y), Point(P[3].x, P[3].y), Scalar(255,0,0), 2, CV_AA); //Draw the lines
               sensor_msgs::Image output_ros;
-              cv_bridge::CvImage out_msg;
+              //cv_bridge::CvImage out_msg;
               out_msg.encoding = sensor_msgs::image_encodings::RGB8; // Or whatever
+		}
               vector<Point2f> dst_lines_point;
               dst_lines_point.resize(4);
               undistortPoints(P, dst_lines_point, cM, Dl);
@@ -282,13 +293,15 @@ else{//method3
 	      T_P.resize(1);
 	      T_P[0].x = P[1].x; //C_G[0].x + d*cos(alpha-beta);
 	      T_P[0].y = P[1].y;//C_G[0].y + d*sin(alpha-beta);
-              circle(output_image, Point(T_P[0].x,T_P[0].y), 3, Scalar(0,255,0), -1);
-	      out_msg.image  = output_image; // Your cv::Mat
 	      if(visualization == true){
 	      cv::imshow("output_image",output_image); //Show the resulting image
   	      cv::waitKey(1);
 	      }
+              if(debug_vis == true){
+              circle(output_image, Point(T_P[0].x,T_P[0].y), 3, Scalar(0,255,0), -1);
+              out_msg.image  = output_image; // Your cv::Mat
               image_thresholded_pub_.publish(out_msg.toImageMsg());
+		}
 
 	      //undistort point
 	      vector<Point2f> dst_P;
