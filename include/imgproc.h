@@ -79,7 +79,7 @@ class cylinder_detection : public nodelet::Nodelet
         vpImagePoint init_point_blob;
 	std::vector<vpMeLine*> line_buffer;
 	std::vector<boost::thread*> line_tracker_buff_thread;
-	void imgproc_visp(const cv::Mat &img,  const ros::Time& frame_time);
+	void imgproc_visp(const cv::Mat &src,  const ros::Time& frame_time);
         void imgproc_opencv(const cv::Mat &img);
 	void init_detection_hough(const Mat &src, Vec4i& P1, Vec4i& P2, int& size);
 	double P[12];

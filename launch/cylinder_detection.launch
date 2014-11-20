@@ -1,6 +1,6 @@
 <launch>
   <node pkg="nodelet" type="nodelet" name="manager_nodelet"  args="manager" output="screen">
-  <param name="num_worker_threads" type="int" value="8"/>
+<!--  <param name="num_worker_threads" type="int" value="8"/>-->
   </node>
     
     <!--Camera settings-->
@@ -45,10 +45,10 @@
     <remap from="image_rect" to="$(arg camera)/image_rect_mono" />
   </node>
   
-   <node pkg="nodelet"
+  <node pkg="nodelet"
         type="nodelet"
         name="cylinder_detection"
-        args="standalone cylinder_detection/cylinder_detection"
+        args="load cylinder_detection/cylinder_detection manager_nodelet"
         output="screen">
     <rosparam file="$(find cylinder_detection)/src/parameter.yaml" />
     <remap from="~image" to="$(arg camera)/image_rect_mono"/>
