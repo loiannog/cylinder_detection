@@ -19,11 +19,11 @@
     <arg name="expose_us" default="15000"/>
     <arg name="gain_db" default="0.0"/>
     <arg name="hdr" default="false"/>
-    <arg name="boost" default="true"/>
+    <arg name="boost" default="true"/>-->
     
     
     <!--Run as standalone nodelet-->
-   <node pkg="nodelet" type="nodelet"
+  <!-- <node pkg="nodelet" type="nodelet"
          name="mv_$(arg serial)"
          args="load bluefox2/SingleNodelet manager_nodelet">
         <param name="identifier" type="string" value="$(arg serial)"/>
@@ -46,7 +46,7 @@
         args="load image_proc/rectify manager_nodelet">
     <remap from="image_mono" to="$(arg camera)/image_raw" />
     <remap from="image_rect" to="$(arg camera)/image_rect_mono" />
-  </node>
+  </node>-->
   
   <node pkg="nodelet"
         type="nodelet"

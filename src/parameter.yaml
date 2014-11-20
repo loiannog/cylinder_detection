@@ -19,7 +19,7 @@ d1: 0
 d2: 0
 d3: 0
 lowThreshold: 30
-thresh_threshold: 50
+thresh_threshold: 100
 maxThreshold: 255
 maxCannyThreshold: 100
 aperture_size: 3
@@ -28,7 +28,7 @@ thetaRes: 0.02
 HoughThresh: 150
 minLineLength: 80
 maxLineGap: 10
-kernelSize: 3
+kernelSize: 7
 sigmaX: 0
 nbLines: 2
 method: 1

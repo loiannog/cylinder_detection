@@ -18,7 +18,7 @@ using namespace std;
 using namespace cv;
 using namespace ros;
 bool visualization = false;
-bool debug_vis = false;
+bool debug_vis = true;
 bool points_init = false;
 vpDisplayOpenCV d;
 int counter;
@@ -47,7 +47,12 @@ void cylinder_detection::imgproc_visp(const Mat &src,
   GaussianBlur(src, blurred, Size(kernelSize, kernelSize),
                sigmaX);  // clean the image
   threshold(blurred, thresholded, thresh_threshold, maxThreshold,
-            THRESH_TOZERO);  // threshold the image
+            THRESH_BINARY);  // threshold the image
+  /// Canny detector
+  //int const max_lowThreshold = 100;
+//int ratio = 3;
+//int kernel_size = 3;
+  //Canny( blurred, thresholded, lowThreshold, lowThreshold*ratio, kernel_size );
 
   vpImage<unsigned char> I;
   vpImageConvert::convert(thresholded, I);
@@ -213,11 +218,12 @@ void cylinder_detection::imgproc_visp(const Mat &src,
 
     for (int i = 0; i < nbLines; i++) {
       try {
+	line_buffer[i]->seekExtremities(I);
         line_buffer[i]->setMe(&me);
         line_tracker_buff_thread[i] =
             new boost::thread(&vpMeLine::track, line_buffer[i], I);
-        // if(visualization == true)
-        // line_buffer[i]->display(I, vpColor::green) ;
+         if(visualization == true)
+         line_buffer[i]->display(I, vpColor::green) ;
       }
       catch (const std::exception &e) {
         cout << "tracking line failed" << endl;
@@ -307,30 +313,38 @@ void cylinder_detection::imgproc_visp(const Mat &src,
 
   vector<Point2f> T_P;
   // vector<Point2f> C_G;
-  T_P.resize(1);
-  T_P[0].x = P[1].x;  // C_G[0].x + d*cos(alpha-beta);
-  T_P[0].y = P[1].y;  // C_G[0].y + d*sin(alpha-beta);
+  T_P.resize(2);
+  T_P[0].x = P[1].x;
+  T_P[0].y = P[1].y;
+  T_P[1].x = P[3].x;
+  T_P[1].y = P[3].y;
   if (visualization == true) {
     cv::imshow("output_image", output_image);  // Show the resulting image
     cv::waitKey(1);
   }
   if (debug_vis == true) {
     circle(output_image, Point(T_P[0].x, T_P[0].y), 3, Scalar(0, 255, 0), -1);
+        circle(output_image, Point(T_P[1].x, T_P[1].y), 3, Scalar(0, 255, 0), -1);
     out_msg.image = output_image;  // Your cv::Mat
     image_thresholded_pub_.publish(out_msg.toImageMsg());
   }
 
   // undistort point
   vector<Point2f> dst_P;
-  dst_P.resize(
-      1);  // line_buffer[i]->initTracking(I,init_points[k],init_points[k+1]);
-
+  dst_P.resize(2);
+//first tangent point
   undistortPoints(T_P, dst_P, cM, Dl);
-  detected_features.b.x =
+  detected_features.b1.x =
       dst_P[0].x / sqrt(pow(dst_P[0].x, 2) + pow(dst_P[0].y, 2) + 1);
-  detected_features.b.y =
+  detected_features.b1.y =
       dst_P[0].y / sqrt(pow(dst_P[0].x, 2) + pow(dst_P[0].y, 2) + 1);
-  detected_features.b.z = 1 / sqrt(pow(dst_P[0].x, 2) + pow(dst_P[0].y, 2) + 1);
+  detected_features.b1.z = 1 / sqrt(pow(dst_P[0].x, 2) + pow(dst_P[0].y, 2) + 1);
+  //second tangent point
+    detected_features.b2.x =
+      dst_P[1].x / sqrt(pow(dst_P[1].x, 2) + pow(dst_P[1].y, 2) + 1);
+  detected_features.b2.y =
+      dst_P[1].y / sqrt(pow(dst_P[1].x, 2) + pow(dst_P[1].y, 2) + 1);
+  detected_features.b2.z = 1 / sqrt(pow(dst_P[1].x, 2) + pow(dst_P[1].y, 2) + 1);
   cylinder_pos_pub_.publish(detected_features);
   if (visualization == true) vpDisplay::flush(I);
 }
