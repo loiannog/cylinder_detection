@@ -85,6 +85,7 @@ class cylinder_detection : public nodelet::Nodelet
 	double P[12];
 	int method;
 	int size;
+	vpMe me;
 
  private:
   void camera_callback(const sensor_msgs::ImageConstPtr &img);
