@@ -59,7 +59,6 @@ void cylinder_detection::imgproc_visp(const Mat &src,
 
   // vpMeLine line[nbLines];
 
-
   // Initialize the tracking.
   std::list<vpDot2>
       list_d;  // list of elements in constrast respect ot the background
@@ -75,18 +74,19 @@ void cylinder_detection::imgproc_visp(const Mat &src,
 
   // initialization
   if (!points_init) {
-	// Set the tracking parameters.
-    me.setRange(30);  // set the search range on both sides of the reference pixel
+    // Set the tracking parameters.
+    me.setRange(
+        30);  // set the search range on both sides of the reference pixel
     // me.setSampleStep(4);//set the minimum distance in pixel between two
     // discretized points.
     // each pixel along the normal we will compute the oriented convolution
     me.setThreshold(
-	15000);  // the pixel that will be selected by the moving edges
-		// algorithm will be the one that has a convolution
-		// higher than 15000
+        15000);  // the pixel that will be selected by the moving edges
+                 // algorithm will be the one that has a convolution
+                 // higher than 15000
     me.setNbTotalSample(700);
     me.setPointsToTrack(700);
-    
+
     if (method == 0) {
       try {
         dot_search.initTracking(I);
@@ -202,8 +202,8 @@ void cylinder_detection::imgproc_visp(const Mat &src,
       k = k + 2;
     }
 
-                  for (int i =0; i < nbLines; i++){
-           line_tracker_buff_thread[i]->join();
+    for (int i = 0; i < nbLines; i++) {
+      line_tracker_buff_thread[i]->join();
     }
 
     // dot_search.track(I);//track the dot
@@ -213,7 +213,7 @@ void cylinder_detection::imgproc_visp(const Mat &src,
 
     for (int i = 0; i < nbLines; i++) {
       try {
-	//line_buffer[i]->setMe(&me);
+        line_buffer[i]->setMe(&me);
         line_tracker_buff_thread[i] =
             new boost::thread(&vpMeLine::track, line_buffer[i], I);
         // if(visualization == true)
@@ -322,7 +322,8 @@ void cylinder_detection::imgproc_visp(const Mat &src,
 
   // undistort point
   vector<Point2f> dst_P;
-  dst_P.resize(1);        // line_buffer[i]->initTracking(I,init_points[k],init_points[k+1]);
+  dst_P.resize(
+      1);  // line_buffer[i]->initTracking(I,init_points[k],init_points[k+1]);
 
   undistortPoints(T_P, dst_P, cM, Dl);
   detected_features.b.x =
