@@ -18,7 +18,7 @@ using namespace std;
 using namespace cv;
 using namespace ros;
 bool visualization = false;
-bool debug_vis = true;
+bool debug_vis = false;
 bool points_init = false;
 vpDisplayOpenCV d;
 int counter;
