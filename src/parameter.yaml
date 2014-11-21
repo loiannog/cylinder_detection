@@ -28,7 +28,7 @@ thetaRes: 0.02
 HoughThresh: 150
 minLineLength: 80
 maxLineGap: 10
-kernelSize: 5
+kernelSize: 3
 sigmaX: 0
 nbLines: 2
 method: 1

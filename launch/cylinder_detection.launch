@@ -11,12 +11,12 @@
 
     <arg name="calib_url"
         default="package://bluefox2/calib/calib_$(arg serial).yml"/>
-    <arg name="fps" default="100"/>
+    <arg name="fps" default="90"/>
     <arg name="color" default="false"/>
     <arg name="binning" default="false"/>
     <arg name="trigger" default="0"/>
-    <arg name="auto_fix_expose" default="true"/>
-    <arg name="expose_us" default="15000"/>
+    <arg name="aec" default="0"/>
+    <arg name="expose_us" default="12000"/>
     <arg name="gain_db" default="0.0"/>
     <arg name="hdr" default="false"/>
     <arg name="boost" default="true"/>
@@ -35,7 +35,7 @@
         <param name="color" type="bool" value="$(arg color)"/>
         <param name="binning" type="bool" value="$(arg binning)"/>
         <param name="trigger" type="int" value="$(arg trigger)"/>
-        <param name="auto_fix_expose" type="bool" value="$(arg auto_fix_expose)"/>
+        <param name="aec" type="int" value="$(arg aec)"/>
         <param name="expose_us" type="int" value="$(arg expose_us)"/>
         <param name="gain_db" type="double" value="$(arg gain_db)"/>
         <param name="hdr" type="bool" value="$(arg hdr)"/>

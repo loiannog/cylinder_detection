@@ -42,7 +42,6 @@ float distanceFormularobust(Vec4i l, double diff_rho) {
 void cylinder_detection::imgproc_visp(const Mat &src,
                                       const ros::Time &frame_time) {
 
-  double begin = ros::Time::now().toSec();
   Mat blurred, thresholded, dst, cdst;  // Image matrices
   GaussianBlur(src, blurred, Size(kernelSize, kernelSize),
                sigmaX);  // clean the image
@@ -56,17 +55,12 @@ void cylinder_detection::imgproc_visp(const Mat &src,
     vpDisplay::display(I);
   #endif
 
-
-  // Initialize the tracking.
-  std::list<vpDot2>
-      list_d;  // list of elements in constrast respect ot the background
-
-  vector<vpImagePoint> init_points;
-  init_points.resize(4);
-
   // initialization
   if (!points_init) {
     // Set the tracking parameters.
+  // Initialize the tracking.
+  vector<vpImagePoint> init_points;
+  init_points.resize(4);
     me.setRange(
         30);  // set the search range on both sides of the reference pixel
     // me.setSampleStep(4);//set the minimum distance in pixel between two
@@ -83,7 +77,6 @@ void cylinder_detection::imgproc_visp(const Mat &src,
       Vec4i P1;
       Vec4i P2;
       int size = 0;
-      double max_area = 0;
       std::list<vpDot2>
           list_d;  // list of elements in constrast respect ot the background
 
@@ -276,7 +269,6 @@ void cylinder_detection::imgproc_visp(const Mat &src,
 void cylinder_detection::init_detection_hough(const Mat &src, Vec4i &P1,
                                               Vec4i &P2, int &size) {
   // Declarations
-  double begin = ros::Time::now().toSec();
   Mat dst, cdst;        // Image matrices
   vector<Vec4i> lines;  // Vector to hold all lines return by a Hough Transform
   vector<Vec4i>
