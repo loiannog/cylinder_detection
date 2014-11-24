@@ -147,7 +147,6 @@ void cylinder_detection::imgproc_visp(const Mat &src,
   for (int i = 0; i < nbLines; i++) {
     line_tracker_buff_thread[i]->join();
   }
-
   cv::Mat output_image(480, 752, CV_32F);
   cv_bridge::CvImage out_msg;
 
