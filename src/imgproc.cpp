@@ -20,6 +20,7 @@ using namespace ros;
 //enable for debugging
 //#define visualization
 //#define debug_vis
+//#define debug_vis_threshold
 bool points_init = false;
 vpDisplayOpenCV d;
 //#define GUI
@@ -39,16 +40,28 @@ float distanceFormularobust(Vec4i l, double diff_rho) {
   return distance;
 }
 
-void cylinder_detection::imgproc_visp(const Mat &src,
+void cylinder_detection::imgproc_visp(Mat &src,
                                       const ros::Time &frame_time) {
 
+   src = src.rowRange(0, src.rows - 50);
   Mat blurred, thresholded, dst, cdst;  // Image matrices
-  GaussianBlur(src, blurred, Size(kernelSize, kernelSize),
+//  GaussianBlur(src, blurred, Size(kernelSize, kernelSize),
+  //             sigmaX);  // clean the image
+  threshold(src, blurred, thresh_threshold, maxThreshold,
+            THRESH_BINARY_INV);  // threshold the image
+  GaussianBlur(blurred, thresholded, Size(kernelSize, kernelSize),
                sigmaX);  // clean the image
-  threshold(blurred, thresholded, thresh_threshold, maxThreshold,
-            THRESH_BINARY);  // threshold the image
-  vpImage<unsigned char> I;
+  
+vpImage<unsigned char> I;
   vpImageConvert::convert(thresholded, I);
+
+  #ifdef debug_vis_threshold
+  cv_bridge::CvImage out_msg_threshold;
+    out_msg_threshold.encoding = sensor_msgs::image_encodings::MONO8;  // Or whatever
+    out_msg_threshold.image = thresholded;  // Your cv::Mat
+    image_thresholded_original_pub_.publish(out_msg_threshold.toImageMsg());
+  #endif
+
 
   #ifdef visualization
     d.init(I, 0, 0, "");

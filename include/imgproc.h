@@ -70,6 +70,7 @@ class cylinder_detection : public nodelet::Nodelet
 	   
 
 	  image_transport::Publisher image_thresholded_pub_;
+          image_transport::Publisher image_thresholded_original_pub_;
 	    ros::Publisher cylinder_pos_pub_;
 	    cylinder_msgs::ImageFeatures detected_features;
 
@@ -79,7 +80,7 @@ class cylinder_detection : public nodelet::Nodelet
         vpImagePoint init_point_blob;
 	std::vector<vpMeLine*> line_buffer;
 	std::vector<boost::thread*> line_tracker_buff_thread;
-	void imgproc_visp(const cv::Mat &src,  const ros::Time& frame_time);
+	void imgproc_visp(cv::Mat &src,  const ros::Time& frame_time);
 	void init_detection_hough(const Mat &src, Vec4i& P1, Vec4i& P2, int& size);
 	double P[12];
 	int method;

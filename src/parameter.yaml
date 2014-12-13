@@ -18,8 +18,8 @@ d0: 0
 d1: 0
 d2: 0
 d3: 0
-lowThreshold: 30
-thresh_threshold: 100
+lowThreshold: 10
+thresh_threshold: 50
 maxThreshold: 255
 maxCannyThreshold: 100
 aperture_size: 3

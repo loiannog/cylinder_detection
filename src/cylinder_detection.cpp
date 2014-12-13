@@ -78,6 +78,8 @@ void cylinder_detection::onInit(void) {
     cvStartWindowThread();*/
   image_transport::ImageTransport it(priv_nh);
   image_thresholded_pub_ = it.advertise("/image_detected", 1);
+  image_thresholded_original_pub_ = it.advertise("/image_detected_theshold", 1);
+
   // cylinder_pos_pub_ =
   // priv_nh.advertise<std_msgs::Float32MultiArray>("/cylinder_position_testing",
   // 5);
@@ -103,7 +105,7 @@ void cylinder_detection::camera_callback(
     // cv::Mat src(cv::Size(img->width, img->height), CV_8UC1,
     // const_cast<uchar*>(&img->data[0]), img->step);
     // cv::Mat src_sub = src.rowRange(src.rows/2 - 60, src.rows/2 + 60);
-    const cv::Mat src = cv_bridge::toCvShare(img)->image;
+    cv::Mat src = cv_bridge::toCvShare(img)->image;
 
     imgproc_visp(src, img->header.stamp);
   }

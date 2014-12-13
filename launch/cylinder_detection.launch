@@ -11,7 +11,7 @@
 
     <arg name="calib_url"
         default="package://bluefox2/calib/calib_$(arg serial).yml"/>
-    <arg name="fps" default="90"/>
+    <arg name="fps" default="150"/>
     <arg name="color" default="false"/>
     <arg name="binning" default="false"/>
     <arg name="trigger" default="0"/>
