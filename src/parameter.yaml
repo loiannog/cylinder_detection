@@ -19,9 +19,9 @@ d1: 0
 d2: 0
 d3: 0
 lowThreshold: 10
-thresh_threshold: 50
+thresh_threshold: 100
 maxThreshold: 255
-maxCannyThreshold: 100
+maxCannyThreshold: 60
 aperture_size: 3
 rhoRes: 2
 thetaRes: 0.02

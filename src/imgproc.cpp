@@ -45,10 +45,10 @@ void cylinder_detection::imgproc_visp(Mat &src,
 
    src = src.rowRange(0, src.rows - 50);
   Mat blurred, thresholded, dst, cdst;  // Image matrices
-//  GaussianBlur(src, blurred, Size(kernelSize, kernelSize),
-  //             sigmaX);  // clean the image
+  //GaussianBlur(src, blurred, Size(kernelSize, kernelSize),
+    //           sigmaX);  // clean the image
   threshold(src, blurred, thresh_threshold, maxThreshold,
-            THRESH_BINARY_INV);  // threshold the image
+            THRESH_TRUNC);  // threshold the image
   GaussianBlur(blurred, thresholded, Size(kernelSize, kernelSize),
                sigmaX);  // clean the image
   
@@ -80,11 +80,11 @@ vpImage<unsigned char> I;
     // discretized points.
     // each pixel along the normal we will compute the oriented convolution
     me.setThreshold(
-        15000);  // the pixel that will be selected by the moving edges
+        20000);  // the pixel that will be selected by the moving edges
                  // algorithm will be the one that has a convolution
                  // higher than 15000
-    me.setNbTotalSample(700);
-    me.setPointsToTrack(700);
+    //me.setNbTotalSample(700);
+    //me.setPointsToTrack(700);
 
       // use Hough transform to initilize lines
       Vec4i P1;
