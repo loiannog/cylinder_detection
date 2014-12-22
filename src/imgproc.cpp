@@ -240,10 +240,10 @@ vpImage<unsigned char> I;
   vector<Point2f> T_P;
   // vector<Point2f> C_G;
   T_P.resize(2);
-  T_P[0].x = P[1].x;
-  T_P[0].y = P[1].y;
-  T_P[1].x = P[3].x;
-  T_P[1].y = P[3].y;
+  T_P[0].x = P[0].x;
+  T_P[0].y = P[0].y;
+  T_P[1].x = P[2].x;
+  T_P[1].y = P[2].y;
   #ifdef visualization
     cv::imshow("output_image", output_image);  // Show the resulting image
     cv::waitKey(1);
