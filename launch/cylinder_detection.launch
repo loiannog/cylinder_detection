@@ -1,60 +1,61 @@
 <launch>
+
   <node pkg="nodelet" type="nodelet" name="manager_nodelet"  args="manager" output="screen">
     <param name="num_worker_threads" type="int" value="8"/>
   </node>
-    
-    <!--Camera settings-->
-    <arg name="serial" default="25000836"/>
-    <arg name="frame_id" default="mv_$(arg serial)"/>
-    <arg name="camera" default="mv_$(arg serial)"/>
- <arg name="camera_name" default="mv_$(arg serial)"/>
 
-    <arg name="calib_url"
-        default="package://bluefox2/calib/calib_$(arg serial).yml"/>
-    <arg name="fps" default="150"/>
-    <arg name="color" default="false"/>
-    <arg name="binning" default="false"/>
-    <arg name="trigger" default="0"/>
-    <arg name="aec" default="0"/>
-    <arg name="expose_us" default="400"/>
-    <arg name="gain_db" default="0.0"/>
-    <arg name="hdr" default="false"/>
-    <arg name="boost" default="true"/>
-    
-    
-    <!--Run as standalone nodelet-->
-   <node pkg="nodelet" type="nodelet"
-         name="mv_$(arg serial)"
-         args="load bluefox2/SingleNodelet manager_nodelet">
-        <param name="identifier" type="string" value="$(arg serial)"/>
-        <param name="frame_id" type="string" value="$(arg frame_id)"/>
-        <param name="camera" type="string" value="$(arg camera)"/>
-        <param name="camera_name" type="string" value="$(arg camera_name)"/>
-        <param name="calib_url" type="string" value="$(arg calib_url)"/>
-        <param name="fps" type="double" value="$(arg fps)"/>
-        <param name="color" type="bool" value="$(arg color)"/>
-        <param name="binning" type="bool" value="$(arg binning)"/>
-        <param name="trigger" type="int" value="$(arg trigger)"/>
-        <param name="aec" type="int" value="$(arg aec)"/>
-        <param name="expose_us" type="int" value="$(arg expose_us)"/>
-        <param name="gain_db" type="double" value="$(arg gain_db)"/>
-        <param name="hdr" type="bool" value="$(arg hdr)"/>
-        <param name="boost" type="bool" value="$(arg boost)"/>
-    </node>
+  <!--Camera settings-->
+  <arg name="serial" default="25000836"/>
+  <arg name="frame_id" default="mv_$(arg serial)"/>
+  <arg name="camera" default="mv_$(arg serial)"/>
+  <arg name="camera_name" default="mv_$(arg serial)"/>
+
+  <arg name="calib_url"
+       default="package://bluefox2/calib/calib_$(arg serial).yml"/>
+  <arg name="fps" default="150"/>
+  <arg name="color" default="false"/>
+  <arg name="binning" default="false"/>
+  <arg name="trigger" default="0"/>
+  <arg name="aec" default="0"/>
+  <arg name="expose_us" default="400"/>
+  <arg name="gain_db" default="0.0"/>
+  <arg name="hdr" default="false"/>
+  <arg name="boost" default="true"/>
+
+
+  <!--Run as standalone nodelet-->
+  <node pkg="nodelet" type="nodelet"
+      name="mv_$(arg serial)"
+      args="load bluefox2/SingleNodelet manager_nodelet">
+    <param name="identifier" type="string" value="$(arg serial)"/>
+    <param name="frame_id" type="string" value="$(arg frame_id)"/>
+    <param name="camera" type="string" value="$(arg camera)"/>
+    <param name="camera_name" type="string" value="$(arg camera_name)"/>
+    <param name="calib_url" type="string" value="$(arg calib_url)"/>
+    <param name="fps" type="double" value="$(arg fps)"/>
+    <param name="color" type="bool" value="$(arg color)"/>
+    <param name="binning" type="bool" value="$(arg binning)"/>
+    <param name="trigger" type="int" value="$(arg trigger)"/>
+    <param name="aec" type="int" value="$(arg aec)"/>
+    <param name="expose_us" type="int" value="$(arg expose_us)"/>
+    <param name="gain_db" type="double" value="$(arg gain_db)"/>
+    <param name="hdr" type="bool" value="$(arg hdr)"/>
+    <param name="boost" type="bool" value="$(arg boost)"/>
+  </node>
 
   <node pkg="nodelet" type="nodelet" name="rectify_mono"
         args="load image_proc/rectify manager_nodelet">
     <remap from="image_mono" to="$(arg camera)/image_raw" />
     <remap from="image_rect" to="$(arg camera)/image_rect_mono" />
   </node>
-  
-  <!-- node pkg="nodelet"
-        type="nodelet"
-        name="cylinder_detection"
-        args="load cylinder_detection/cylinder_detection manager_nodelet"
-        output="screen">
+
+  <node pkg="nodelet"
+      type="nodelet"
+      name="cylinder_detection"
+      args="load cylinder_detection/cylinder_detection manager_nodelet"
+      output="screen">
     <rosparam file="$(find cylinder_detection)/src/parameter.yaml" />
     <remap from="~image" to="$(arg camera)/image_rect_mono"/>
-</node -->
+  </node>
 
 </launch>
