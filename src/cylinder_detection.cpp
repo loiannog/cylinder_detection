@@ -79,6 +79,7 @@ void cylinder_detection::onInit(void) {
   image_transport::ImageTransport it(priv_nh);
   image_thresholded_pub_ = it.advertise("/image_detected", 1);
   image_thresholded_original_pub_ = it.advertise("/image_detected_theshold", 1);
+  image_lines_pub_ = it.advertise("/image_with_lines", 1);
 
   // cylinder_pos_pub_ =
   // priv_nh.advertise<std_msgs::Float32MultiArray>("/cylinder_position_testing",

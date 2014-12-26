@@ -18,6 +18,7 @@ using namespace std;
 using namespace cv;
 using namespace ros;
 //enable for debugging
+//#define debug_lines
 //#define visualization
 //#define debug_vis
 //#define debug_vis_threshold
@@ -51,17 +52,16 @@ void cylinder_detection::imgproc_visp(Mat &src,
             THRESH_TRUNC);  // threshold the image
   GaussianBlur(blurred, thresholded, Size(kernelSize, kernelSize),
                sigmaX);  // clean the image
-  
-vpImage<unsigned char> I;
+
+  vpImage<unsigned char> I;
   vpImageConvert::convert(thresholded, I);
 
   #ifdef debug_vis_threshold
-  cv_bridge::CvImage out_msg_threshold;
+    cv_bridge::CvImage out_msg_threshold;
     out_msg_threshold.encoding = sensor_msgs::image_encodings::MONO8;  // Or whatever
     out_msg_threshold.image = thresholded;  // Your cv::Mat
     image_thresholded_original_pub_.publish(out_msg_threshold.toImageMsg());
   #endif
-
 
   #ifdef visualization
     d.init(I, 0, 0, "");
@@ -311,6 +311,26 @@ void cylinder_detection::init_detection_hough(const Mat &src, Vec4i &P1,
       }
     }
   }
+
+  #ifdef debug_lines
+    vpImage<vpRGBa> Irgba;              // a color image
+    vpImageConvert::convert(dst, Irgba);  // convert a greyscale to a color image.
+
+    cv::Mat output_image(src.rows, src.cols, CV_32F);
+    vpImageConvert::convert(Irgba, output_image);
+
+    for (size_t i = 0; i < lines.size(); i++)
+    {
+      Vec4i l = lines[i];
+      cv::line(output_image, Point(l[0], l[1]), Point(l[2], l[3]),
+             Scalar(0, 0, 255), 2, CV_AA);
+    }
+
+    cv_bridge::CvImage img_w_lines;
+    img_w_lines.encoding = sensor_msgs::image_encodings::RGB8;  // Or whatever
+    img_w_lines.image = output_image;  // Your cv::Mat
+    image_lines_pub_.publish(img_w_lines.toImageMsg());
+  #endif
 
   // If there was a line detected at all, this now looks for the line parallel
   // to that line
