@@ -48,9 +48,9 @@ void cylinder_detection::imgproc_visp(Mat &src,
   Mat blurred, thresholded, dst, cdst;  // Image matrices
   //GaussianBlur(src, blurred, Size(kernelSize, kernelSize),
     //           sigmaX);  // clean the image
-  threshold(src, blurred, thresh_threshold, maxThreshold,
+  threshold(src, thresholded, thresh_threshold, maxThreshold,
             THRESH_TRUNC);  // threshold the image
-  GaussianBlur(blurred, thresholded, Size(kernelSize, kernelSize),
+  GaussianBlur(thresholded, blurred, Size(kernelSize, kernelSize),
                sigmaX);  // clean the image
 
   vpImage<unsigned char> I;
