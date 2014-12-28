@@ -54,7 +54,7 @@ void cylinder_detection::imgproc_visp(Mat &src,
                sigmaX);  // clean the image
 
   vpImage<unsigned char> I;
-  vpImageConvert::convert(thresholded, I);
+  vpImageConvert::convert(blurred, I);
 
   #ifdef debug_vis_threshold
     cv_bridge::CvImage out_msg_threshold;
