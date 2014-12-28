@@ -384,15 +384,15 @@ void cylinder_detection::init_detection_hough(const Mat &src, Vec4i &P1,
       lineDistance[2] = maxLMid[0];
       lineDistance[3] = maxLMid[1];
 
-      double theta_line1 = atan2(maxL[3] - maxL[1], maxL[2] - maxL[0]);
-      double theta_line2 = atan2(l[3] - l[1], l[2] - l[0]);
-      double rho_line1 =
-          maxL[0] * cos(theta_line1) + maxL[1] * sin(theta_line1);
+      // Need to subtract the pi/2 term to get the angle of the perpendicular line
+      double theta_line1 = atan2((maxL[3] - maxL[1]) , (maxL[2] - maxL[0])) - CV_PI/2;
+      double theta_line2 = atan2((l[3] - l[1]) , (l[2] - l[0])) - CV_PI/2;
+
+      double rho_line1 = maxL[0] * cos(theta_line1) + maxL[1] * sin(theta_line1);
       double rho_line2 = l[0] * cos(theta_line2) + l[1] * sin(theta_line2);
       double diff_rho = fabs(rho_line1 - rho_line2);
 
-      double length_maxL =
-          sqrt(pow(maxL[3] - maxL[1], 2) + pow(maxL[2] - maxL[0], 2));
+      double length_maxL = sqrt(pow(maxL[3] - maxL[1], 2) + pow(maxL[2] - maxL[0], 2));
       double length_l = sqrt(pow(l[3] - l[1], 2) + pow(l[2] - l[0], 2));
       double diff_line_length = fabs(length_maxL - length_l);
 
