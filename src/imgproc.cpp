@@ -336,12 +336,12 @@ void cylinder_detection::init_detection_hough(const Mat &src, Vec4i &P1,
     {
       Vec4i l = lines[i];
       cv::line(output_image, Point(l[0], l[1]), Point(l[2], l[3]),
-             Scalar(0, 0, 255), 2, CV_AA);
+             Scalar(255, 0, 0), 1, CV_AA);
     }
 
     cv_bridge::CvImage img_w_lines;
-    img_w_lines.encoding = sensor_msgs::image_encodings::RGB8;  // Or whatever
-    img_w_lines.image = output_image;  // Your cv::Mat
+    img_w_lines.encoding = sensor_msgs::image_encodings::RGB8;
+    img_w_lines.image = output_image;
     image_lines_pub_.publish(img_w_lines.toImageMsg());
   #endif
 
