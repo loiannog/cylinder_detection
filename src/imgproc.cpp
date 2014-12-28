@@ -69,7 +69,8 @@ void cylinder_detection::imgproc_visp(Mat &src,
   #endif
 
   // initialization
-  if (!points_init) {
+  if (!points_init) 
+  {
     // Set the tracking parameters.
   // Initialize the tracking.
   vector<vpImagePoint> init_points;
@@ -114,52 +115,60 @@ void cylinder_detection::imgproc_visp(Mat &src,
     line_tracker_buff_thread.resize(nbLines);
     line_buffer.resize(nbLines);
     int k = 0;
-    for (int i = 0; i < nbLines; i++) {
+    for (int i = 0; i < nbLines; i++) 
+    {
       line_buffer[i] = new vpMeLine();
       line_buffer[i]->setMe(&me);
       #ifdef visualization
         line_buffer[i]->setDisplay(vpMeSite::RANGE_RESULT);
       #endif
-      try {
+      
+      try 
+      {
         line_tracker_buff_thread[i] = new boost::thread(
-            boost::bind(&vpMeLine::initTracking, line_buffer[i], I,
-                        init_points[k], init_points[k + 1]));
+            boost::bind(&vpMeLine::initTracking, line_buffer[i], I, init_points[k], init_points[k + 1]));
       }
-      catch (int e) {
-        cout << "An exception occurred during initial line tracking " << e
-             << endl;
+      catch (int e) 
+      {
+        cout << "An exception occurred during initial line tracking " << e << endl;
       }
       points_init = true;
       k = k + 2;
     }
 
-    for (int i = 0; i < nbLines; i++) {
+    for (int i = 0; i < nbLines; i++) 
+    {
       line_tracker_buff_thread[i]->join();
     }
 
     // dot_search.track(I);//track the dot
     // after initial tracking activate moment computation
-
-  } else {
-
-    for (int i = 0; i < nbLines; i++) {
-      try {
+  }
+  else 
+  {
+    for (int i = 0; i < nbLines; i++) 
+    {
+      try 
+      {
 	line_buffer[i]->seekExtremities(I);
         line_buffer[i]->setMe(&me);
-        line_tracker_buff_thread[i] =
-            new boost::thread(&vpMeLine::track, line_buffer[i], I);
+        line_tracker_buff_thread[i] = new boost::thread(&vpMeLine::track, line_buffer[i], I);
          #ifdef visualization
          line_buffer[i]->display(I, vpColor::green) ;
          #endif
       }
-	catch (const std::exception &e) {
+	    catch (const std::exception &e) 
+	    {
         	cout << "tracking line failed" << endl;
       }
     }
   }
-  for (int i = 0; i < nbLines; i++) {
+  
+  for (int i = 0; i < nbLines; i++) 
+  {
     line_tracker_buff_thread[i]->join();
   }
+  
   cv::Mat output_image(480, 752, CV_32F);
   cv_bridge::CvImage out_msg;
 
@@ -171,8 +180,7 @@ void cylinder_detection::imgproc_visp(Mat &src,
  #endif
 
   // project rho on the axes and transform to normalized image coordinates
-  const cv::Mat cM =
-      (cv::Mat_<double>(3, 3) << fx, 0.0, cx, 0.0, fy, cy, 0.0, 0.0, 1.0);
+  const cv::Mat cM = (cv::Mat_<double>(3, 3) << fx, 0.0, cx, 0.0, fy, cy, 0.0, 0.0, 1.0);
   const cv::Mat Dl = (cv::Mat_<double>(4, 1) << 0, 0, 0, 0);
   vpImagePoint point11;
   vpImagePoint point12;
@@ -206,18 +214,16 @@ void cylinder_detection::imgproc_visp(Mat &src,
   vector<Point2f> dst_lines_point;
   dst_lines_point.resize(4);
   undistortPoints(P, dst_lines_point, cM, Dl);
+ 
   // Computes the angle of the line
-  double theta1 = atan2(dst_lines_point[1].y - dst_lines_point[0].y,
-                        dst_lines_point[1].x - dst_lines_point[0].x);
-  double theta2 = atan2(dst_lines_point[3].y - dst_lines_point[2].y,
-                        dst_lines_point[3].x - dst_lines_point[2].x);
+  double theta1 = atan2(dst_lines_point[1].y - dst_lines_point[0].y,  dst_lines_point[1].x - dst_lines_point[0].x);
+  double theta2 = atan2(dst_lines_point[3].y - dst_lines_point[2].y,  dst_lines_point[3].x - dst_lines_point[2].x);
+ 
   // Angle of the perpendicular to the line
   theta1 = theta1 + M_PI / 2;
   theta2 = theta2 + M_PI / 2;
-  double norm_rho1 =
-      dst_lines_point[0].x * cos(theta1) + dst_lines_point[0].y * sin(theta1);
-  double norm_rho2 =
-      dst_lines_point[2].x * cos(theta2) + dst_lines_point[2].y * sin(theta2);
+  double norm_rho1 = dst_lines_point[0].x * cos(theta1) + dst_lines_point[0].y * sin(theta1);
+  double norm_rho2 = dst_lines_point[2].x * cos(theta2) + dst_lines_point[2].y * sin(theta2);
   // Change for Chaumette convention
  /* while(theta1 < 0)
   {
@@ -258,6 +264,7 @@ void cylinder_detection::imgproc_visp(Mat &src,
   // undistort point
   vector<Point2f> dst_P;
   dst_P.resize(2);
+
 //first tangent point
   undistortPoints(T_P, dst_P, cM, Dl);
   detected_features.b1.x =
@@ -357,17 +364,14 @@ void cylinder_detection::init_detection_hough(const Mat &src, Vec4i &P1,
         ((maxL[2] + maxL[0]) / 2.0));  // Calculates and stores midpoint
     maxLMid.push_back(((maxL[3] + maxL[1]) / 2.0));
     cout << "number other lines: " << lines.size() << endl;
-    for (size_t i = 0; i < lines.size();
-         i++)  // Loops through all the lines to find the one parallel
+
+    for (size_t i = 0; i < lines.size(); i++)  // Loops through all the lines to find the one parallel
     {
       Vec4i l = lines[i];
-      float lineAngle = atan2((l[3] - l[1]), (l[2] - l[0])) * 180 /
-                        CV_PI;  // Calculate angle of current line
+      float lineAngle = atan2((l[3] - l[1]), (l[2] - l[0])) * 180 / CV_PI;  // Calculate angle of current line
 
       vector<float> lMid;
-      lMid.push_back(
-          ((l[2] + l[0]) /
-           2.0));  // Store and calculate the midpoint of the new line
+      lMid.push_back(((l[2] + l[0]) / 2.0));  // Store and calculate the midpoint of the new line
       lMid.push_back(((l[3] + l[1]) / 2.0));
       Vec4i lineDistance;  // Create an imaginary line between the midpoint of
                            // the largest line and the midpoint of the current
@@ -443,7 +447,8 @@ void cylinder_detection::init_detection_hough(const Mat &src, Vec4i &P1,
     }
   }
   // cvtColor(dst, cdst, CV_GRAY2BGR);
-  if (size == 2) {
+  if (size == 2) 
+  {
     P1[0] = buffer1[0][0];
     P1[1] = buffer1[0][1];
     P1[2] = buffer1[0][2];
