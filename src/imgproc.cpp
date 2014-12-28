@@ -307,11 +307,18 @@ void cylinder_detection::init_detection_hough(const Mat &src, Vec4i &P1,
   // Looks for the largest line that was returned by Hough Line Transform
   for (size_t i = 0; i < lines.size(); i++) {
     Vec4i l = lines[i];
-    if (buffer1.empty()) {
+
+    // Only add the line to the buffer if it is mostly vertical in the image
+    double angle = atan2((l[3] - l[1]), (l[2] - l[0])) * 180 / CV_PI;
+    if ((angle > 45 && angle < 135) || (angle < -45 && angle > -135))
+    {
+      if (buffer1.empty())
+      {
       buffer1.push_back(l);
       size = 1;
-    } else {
-      if (distanceFormula(l) > distanceFormula(buffer1[0])) {
+      }
+      else if (distanceFormula(l) > distanceFormula(buffer1[0]))
+      {
         buffer1.pop_back();
         buffer1.push_back(l);
       }
