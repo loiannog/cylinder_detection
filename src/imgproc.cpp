@@ -411,10 +411,17 @@ void cylinder_detection::init_detection_hough(const Mat &src, Vec4i &P1,
       // abs(lineAngle-maxLAngle)!=0.0)
       // cout << "diff_line_length = " << diff_line_length << endl;
 
-      if (abs(lineAngle - maxLAngle) < 20.0 && diff_line_length < 30 &&
-          distanceFormularobust(lineDistance, diff_rho) > 10.0 &&
-          abs(lineAngle - maxLAngle) != 0.0) {
-        if (buffer2.size() > 0) {
+      // TODO: This might not be the best way to handle wrapping
+      double ang_diff = lineAngle - maxLAngle;
+      while (ang_diff > 90) ang_diff -= 180;
+      while (ang_diff < -90) ang_diff += 180; 
+
+      if (abs(ang_diff) < 40.0 && diff_line_length < 60 &&
+          distanceFormularobust(lineDistance, diff_rho) > 40.0 &&
+          abs(lineAngle - maxLAngle) != 0.0)
+      {
+        if (buffer2.size() > 0)
+        {
           Vec4i largestBufferLine = buffer2.back();
           float largestLength = distanceFormula(largestBufferLine);
           if (largestLength <= distanceFormula(l)) {
