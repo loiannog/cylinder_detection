@@ -417,7 +417,7 @@ void cylinder_detection::init_detection_hough(const Mat &src, Vec4i &P1,
       while (ang_diff < -90) ang_diff += 180; 
 
       if (abs(ang_diff) < 40.0 && diff_line_length < 60 &&
-          distanceFormularobust(lineDistance, diff_rho) > 40.0 &&
+          distanceFormularobust(lineDistance, diff_rho) > 10.0 &&
           abs(lineAngle - maxLAngle) != 0.0)
       {
         if (buffer2.size() > 0)

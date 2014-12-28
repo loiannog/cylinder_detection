@@ -20,7 +20,7 @@ d2: 0
 d3: 0
   
 # Image threshold
-thresh_threshold: 100
+thresh_threshold: 250
 maxThreshold: 255
 
 # Canny params
