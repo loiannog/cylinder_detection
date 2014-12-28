@@ -75,7 +75,7 @@ void cylinder_detection::imgproc_visp(Mat &src,
   // Initialize the tracking.
   vector<vpImagePoint> init_points;
   init_points.resize(4);
-    me.setRange(30);  // set the search range on both sides of the reference pixel
+    me.setRange(150);  // set the search range on both sides of the reference pixel
     // me.setSampleStep(4);//set the minimum distance in pixel between two
     // discretized points.
     // each pixel along the normal we will compute the oriented convolution
