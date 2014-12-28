@@ -80,7 +80,7 @@ void cylinder_detection::imgproc_visp(Mat &src,
     // discretized points.
     // each pixel along the normal we will compute the oriented convolution
     me.setThreshold(
-        20000);  // the pixel that will be selected by the moving edges
+        7000);  // the pixel that will be selected by the moving edges
                  // algorithm will be the one that has a convolution
                  // higher than 15000
     //me.setNbTotalSample(700);
