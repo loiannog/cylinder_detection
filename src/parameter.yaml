@@ -18,16 +18,24 @@ d0: 0
 d1: 0
 d2: 0
 d3: 0
-lowThreshold: 10
+  
+# Image threshold
 thresh_threshold: 100
 maxThreshold: 255
-maxCannyThreshold: 60
-aperture_size: 3
+
+# Canny params
+CannyMeanMultiplier: 80 
+CannyStddevMultiplier: 50
+Canny_kernel_size: 7 
+
+# Hough params
 rhoRes: 2
 thetaRes: 0.02
-HoughThresh: 150
-minLineLength: 80
-maxLineGap: 10
+HoughThresh: 100
+minLineLength: 250
+maxLineGap: 70
+
+# Other stuff
 kernelSize: 3
 sigmaX: 0
 nbLines: 2

@@ -56,11 +56,11 @@ void cylinder_detection::onInit(void) {
                         -6.1e-05);  // Surface of a dot to search in an area.
   priv_nh.param<double>("d3", d3,
                         -0.002139);  // Surface of a dot to search in an area.
-  priv_nh.param<int>("lowThreshold", lowThreshold, 30);
   priv_nh.param<int>("thresh_threshold", thresh_threshold, 50);
   priv_nh.param<int>("maxThreshold", maxThreshold, 255);
-  priv_nh.param<int>("maxCannyThreshold", maxCannyThreshold, 150);
-  priv_nh.param<int>("aperture_size", aperture_size, 30);
+  priv_nh.param<int>("CannyMeanMultiplier", CannyMeanMultiplier, 100);
+  priv_nh.param<int>("CannyStddevMultiplier", CannyStddevMultiplier, 70);
+  priv_nh.param<int>("Canny_kernel_size", Canny_kernel_size, 7);
   priv_nh.param<int>("rhoRes", rhoRes, 1);
   priv_nh.param<double>("thetaRes", thetaRes, 0.017453293);
   priv_nh.param<int>("HoughThresh", HoughThresh, 10);

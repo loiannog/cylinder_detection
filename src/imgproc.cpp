@@ -290,9 +290,15 @@ void cylinder_detection::init_detection_hough(const Mat &src, Vec4i &P1,
   Vec4i maxL;             // Holds coordinates of the largest line
   Vec4i otherLine;  // Holds coordinates of the line parallel to the largest.
 
+  cv::Scalar mean, stddev;
+  cv::meanStdDev(src, mean, stddev);
+  // cout << "Canny mean: " << mean[0] << ", Canny stddev: " << stddev[0] << endl;
+
   // Image alterations
-  Canny(src, dst, lowThreshold, maxCannyThreshold,
-        aperture_size);  // Perform the Canny edge detection on the image.
+  Canny(src, dst, CannyMeanMultiplier*mean[0] - CannyStddevMultiplier*stddev[0],
+      CannyMeanMultiplier*mean[0] + CannyStddevMultiplier*stddev[0],
+        Canny_kernel_size);  // Perform the Canny edge detection on the image.
+
   HoughLinesP(dst, lines, rhoRes, thetaRes, HoughThresh, minLineLength,
               maxLineGap);  // Perform hough line transform on the imgae
   // cout<<"processing time:"<<(ros::Time::now().toSec()-begin)<<endl;

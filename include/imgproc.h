@@ -55,11 +55,11 @@ class cylinder_detection : public nodelet::Nodelet
 	  double d1;
 	  double d2;
 	  double d3;
-	  int lowThreshold;
 	  int thresh_threshold;
 	  int maxThreshold;
-	  int maxCannyThreshold;
-	  int aperture_size;
+	  int CannyMeanMultiplier;
+	  int CannyStddevMultiplier;
+	  int Canny_kernel_size;
 	  double thetaRes;
 	  int HoughThresh;
 	  int minLineLength;
