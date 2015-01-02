@@ -64,6 +64,8 @@ class cylinder_detection : public nodelet::Nodelet
 	  int HoughThresh;
 	  int minLineLength;
 	  int maxLineGap;
+	  int line_range;
+	  int line_conv_thresh;
 	  int kernelSize;
 	  int rhoRes;
 	  int sigmaX;

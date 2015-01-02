@@ -20,7 +20,7 @@ using namespace ros;
 //enable for debugging
 //#define debug_lines
 //#define visualization
-//#define debug_vis
+#define debug_vis
 //#define debug_vis_threshold
 bool points_init = false;
 vpDisplayOpenCV d;
@@ -75,11 +75,11 @@ void cylinder_detection::imgproc_visp(Mat &src,
   // Initialize the tracking.
   vector<vpImagePoint> init_points;
   init_points.resize(4);
-    me.setRange(150);  // set the search range on both sides of the reference pixel
+    me.setRange(line_range);  // set the search range on both sides of the reference pixel
     // me.setSampleStep(4);//set the minimum distance in pixel between two
     // discretized points.
     // each pixel along the normal we will compute the oriented convolution
-    me.setThreshold(20000);  // the pixel that will be selected by the moving edges
+    me.setThreshold(line_conv_thresh);  // the pixel that will be selected by the moving edges
                  // algorithm will be the one that has a convolution
                  // higher than 15000
     //me.setNbTotalSample(700);

@@ -35,6 +35,11 @@ HoughThresh: 100
 minLineLength: 250
 maxLineGap: 70
 
+#Line detector parameters
+line_range: 60
+line_conv_thresh: 10000
+
+
 # Other stuff
 kernelSize: 3
 sigmaX: 0

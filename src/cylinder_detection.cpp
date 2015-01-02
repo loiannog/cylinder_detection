@@ -66,6 +66,8 @@ void cylinder_detection::onInit(void) {
   priv_nh.param<int>("HoughThresh", HoughThresh, 10);
   priv_nh.param<int>("minLineLength", minLineLength, 25);
   priv_nh.param<int>("maxLineGap", maxLineGap, 25);
+  priv_nh.param<int>("line_range", line_range, 25);
+  priv_nh.param<int>("line_conv_thresh", line_conv_thresh, 25);
   priv_nh.param<int>("kernelSize", kernelSize, 3);
   priv_nh.param<int>("sigmaX", sigmaX, 0);
   priv_nh.param<int>("nbLines", nbLines, 2);
