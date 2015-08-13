@@ -10,15 +10,15 @@ height_min: 0
 GrayLevelMin: 230
 GrayLevelMax: 255
 Surface: 124
-fx: 362.872192
-fy: 424.990082
-cx: 391.848084
-cy: 220.213336
+fx: 361.587463
+fy: 421.757721
+cx: 392.597419
+cy: 221.643914
 d0: 0
 d1: 0
 d2: 0
 d3: 0
-  
+
 # Image threshold
 thresh_threshold: 1 #130
 maxThreshold: 255

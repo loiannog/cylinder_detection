@@ -17,7 +17,7 @@
   <arg name="binning" default="false"/>
   <arg name="trigger" default="0"/>
   <arg name="aec" default="0"/>
-  <arg name="expose_us" default="400"/>
+  <arg name="expose_us" default="12000"/>
   <arg name="gain_db" default="0.0"/>
   <arg name="hdr" default="false"/>
   <arg name="boost" default="true"/>

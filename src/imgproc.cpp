@@ -77,7 +77,7 @@ void cylinder_detection::imgproc_visp(Mat &src,
   vector<vpImagePoint> init_points;
   init_points.resize(4);
     me.setRange(line_range);  // set the search range on both sides of the reference pixel
-    me.setSampleStep(5);//set the minimum distance in pixel between two
+    me.setSampleStep(4);//set the minimum distance in pixel between two
     // discretized points.
     // each pixel along the normal we will compute the oriented convolution
     me.setThreshold(line_conv_thresh);  // the pixel that will be selected by the moving edges
@@ -99,6 +99,7 @@ void cylinder_detection::imgproc_visp(Mat &src,
     try 
     {
         init_detection_hough(blurred, P1, P2, size);
+        // return; // Uncomment if we want to not initalize tracking
         if (size != 2) return;
 
         init_points[0].set_ij(P1[1], P1[0]);
@@ -153,12 +154,12 @@ void cylinder_detection::imgproc_visp(Mat &src,
     {
       try 
       {
-	line_buffer[i]->seekExtremities(I);
+	      // line_buffer[i]->seekExtremities(I);
         line_buffer[i]->setMe(&me);
         line_tracker_buff_thread[i] = new boost::thread(&vpMeLine::track, line_buffer[i], I);
-         #ifdef visualization
-         line_buffer[i]->display(I, vpColor::green) ;
-         #endif
+        #ifdef visualization
+        line_buffer[i]->display(I, vpColor::green) ;
+        #endif
       }
 	    catch (const std::exception &e) 
 	    {
@@ -204,7 +205,9 @@ void cylinder_detection::imgproc_visp(Mat &src,
   P[3].y = point22.get_i();
 
   #ifdef debug_vis
+    cout << cx << ", " << cy << ", " << fx << ", " << fy << ", " << endl;
     circle(output_image, Point(cx, cy), 3, Scalar(255, 255, 0), -1);
+    circle(output_image, Point(752/2, 480/2), 3, Scalar(0, 255, 0), -1);
     cv::line(output_image, Point(P[0].x, P[0].y), Point(P[1].x, P[1].y),
              Scalar(0, 0, 255), 1, CV_AA);
     cv::line(output_image, Point(P[2].x, P[2].y), Point(P[3].x, P[3].y),
