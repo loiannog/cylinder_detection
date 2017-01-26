@@ -20,7 +20,7 @@ using namespace ros;
 //enable for debugging
 //#define debug_lines
 //#define visualization
-#define debug_vis
+//#define debug_vis
 //#define debug_vis_threshold
 bool points_init = false;
 vpDisplayOpenCV d;
@@ -44,13 +44,14 @@ float distanceFormularobust(Vec4i l, double diff_rho) {
 void cylinder_detection::imgproc_visp(Mat &src,
                                       const ros::Time &frame_time) {
 
-   src = src.rowRange(0, src.rows - 50);
-  Mat blurred, thresholded, dst, cdst;  // Image matrices
+   //src = src.rowRange(0, src.rows - 50);
+  Mat dst, cdst, blurred; //, thresholded;  // Image matrices
   //GaussianBlur(src, blurred, Size(kernelSize, kernelSize),
     //           sigmaX);  // clean the image
-  threshold(src, thresholded, thresh_threshold, maxThreshold,
-            THRESH_BINARY);  // threshold the image
-  GaussianBlur(thresholded, blurred, Size(kernelSize, kernelSize),
+  // threshold(src, thresholded, thresh_threshold, maxThreshold,
+  //          THRESH_TOZERO); // THRESH_BINARY);  // threshold the image
+  
+  GaussianBlur(src, blurred, Size(kernelSize, kernelSize),
                sigmaX);  // clean the image
 
   vpImage<unsigned char> I;
@@ -76,7 +77,7 @@ void cylinder_detection::imgproc_visp(Mat &src,
   vector<vpImagePoint> init_points;
   init_points.resize(4);
     me.setRange(line_range);  // set the search range on both sides of the reference pixel
-    // me.setSampleStep(4);//set the minimum distance in pixel between two
+    me.setSampleStep(5);//set the minimum distance in pixel between two
     // discretized points.
     // each pixel along the normal we will compute the oriented convolution
     me.setThreshold(line_conv_thresh);  // the pixel that will be selected by the moving edges
@@ -84,6 +85,9 @@ void cylinder_detection::imgproc_visp(Mat &src,
                  // higher than 15000
     //me.setNbTotalSample(700);
     //me.setPointsToTrack(700);
+
+    me.setMaskSize(3);
+    // me.setMaskNumber(90); // Used to set angstep
 
       // use Hough transform to initilize lines
       Vec4i P1;
@@ -202,9 +206,9 @@ void cylinder_detection::imgproc_visp(Mat &src,
   #ifdef debug_vis
     circle(output_image, Point(cx, cy), 3, Scalar(255, 255, 0), -1);
     cv::line(output_image, Point(P[0].x, P[0].y), Point(P[1].x, P[1].y),
-             Scalar(0, 0, 255), 2, CV_AA);
+             Scalar(0, 0, 255), 1, CV_AA);
     cv::line(output_image, Point(P[2].x, P[2].y), Point(P[3].x, P[3].y),
-             Scalar(255, 0, 0), 2, CV_AA);  // Draw the lines
+             Scalar(255, 0, 0), 1, CV_AA);  // Draw the lines
     sensor_msgs::Image output_ros;
     // cv_bridge::CvImage out_msg;
     out_msg.encoding = sensor_msgs::image_encodings::RGB8;  // Or whatever

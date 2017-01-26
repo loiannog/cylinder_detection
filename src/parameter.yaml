@@ -20,24 +20,28 @@ d2: 0
 d3: 0
   
 # Image threshold
-thresh_threshold: 200
+thresh_threshold: 1 #130
 maxThreshold: 255
 
 # Canny params
-CannyMeanMultiplier: 80 
+CannyMeanMultiplier: 60 
 CannyStddevMultiplier: 50
-Canny_kernel_size: 7 
+Canny_kernel_size: 7
+
+CannyMeanMultiplier: 10 
+CannyStddevMultiplier: 10
+Canny_kernel_size: 5
 
 # Hough params
 rhoRes: 2
 thetaRes: 0.02
 HoughThresh: 100
-minLineLength: 250
+minLineLength: 150
 maxLineGap: 70
 
 #Line detector parameters
-line_range: 60
-line_conv_thresh: 10000
+line_range: 30
+line_conv_thresh: 12000
 
 
 # Other stuff
